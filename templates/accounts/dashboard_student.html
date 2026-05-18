@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Student Dashboard — EduResults CM{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block nav_s_dashboard %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Good day, {{ user.get_full_name }}</h1>
+  <p>Student Portal · EduResults CM</p>
+</div>
+<div class="card">
+  <div class="card-title">My Results</div>
+  <p style="color:var(--text-muted); font-size:13px; margin-top:.5rem;">
+    No results published yet. Check back after your next examination sequence.
+  </p>
+</div>
+{% endblock %}

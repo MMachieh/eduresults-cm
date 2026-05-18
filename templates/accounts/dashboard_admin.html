@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard — EduResults CM{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Good day, {{ user.get_full_name }}</h1>
+  <p>Administrator · EduResults CM</p>
+</div>
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label"><i class="ti ti-users"></i> Students</div>
+    <div class="stat-value">0</div>
+    <div class="stat-sub">Enrolled this year</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label"><i class="ti ti-chalkboard"></i> Teachers</div>
+    <div class="stat-value">0</div>
+    <div class="stat-sub">Active accounts</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label"><i class="ti ti-building-school"></i> Classes</div>
+    <div class="stat-value">0</div>
+    <div class="stat-sub">This academic year</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label"><i class="ti ti-chart-bar"></i> Results</div>
+    <div class="stat-value">0</div>
+    <div class="stat-sub">Published sequences</div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-header-row">
+    <div class="card-title">Getting started</div>
+  </div>
+  <p style="color:var(--text-muted); font-size:13px;">
+    Start by setting up the school structure — create an Academic Year, then add Classes and Subjects.
+  </p>
+</div>
+{% endblock %}

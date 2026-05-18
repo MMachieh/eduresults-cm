@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Teacher Dashboard — EduResults CM{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block nav_t_dashboard %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Good day, {{ user.get_full_name }}</h1>
+  <p>Teacher Portal · EduResults CM</p>
+</div>
+<div class="card">
+  <div class="card-title">My Assigned Classes</div>
+  <p style="color:var(--text-muted); font-size:13px; margin-top:.5rem;">
+    No classes assigned yet. Contact your administrator.
+  </p>
+</div>
+{% endblock %}
