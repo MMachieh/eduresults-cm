@@ -61,21 +61,24 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 30px;
-            table-layout: fixed;
         }
         .marks-table th, .marks-table td {
             border: 1px solid #000;
-            padding: 8px;
-            vertical-align: top;
-            word-wrap: break-word;
+            padding: 5px 4px;
+            font-size: 9px;
+            vertical-align: middle;
         }
         .marks-table th {
             background-color: #f0f0f0;
             text-align: center;
             font-weight: bold;
             text-transform: uppercase;
-            font-size: 10px;
         }
+        .subject-col { width: 35%; text-align: left; }
+        .coeff-col { width: 6%; text-align: center; }
+        .mark-col { width: 8%; text-align: center; }
+        .total-col { width: 8%; text-align: center; }
+        .remark-col { width: 20%; text-align: left; }
         .text-center { text-align: center; }
         .text-right { text-align: right; }
         .fw-bold { font-weight: bold; }
@@ -137,42 +140,42 @@
     <table class="marks-table">
         <thead>
             <tr>
-                <th style="width: 30%; text-align: left;">Subject</th>
-                <th style="width: 8%">Coeff</th>
-                <th style="width: 10%">Mark (/20)</th>
-                <th style="width: 10%">Total</th>
-                <th style="width: 22%; text-align: left;">Teacher Remark</th>
+                <th class="subject-col">Subject</th>
+                <th class="coeff-col">Coeff</th>
+                <th class="mark-col">Mark (/20)</th>
+                <th class="total-col">Total</th>
+                <th class="remark-col">Teacher Remark</th>
             </tr>
         </thead>
         <tbody>
             {% for mark in marks %}
                 <tr>
-                    <td>
+                    <td class="subject-col">
                         <strong>{{ mark.subject.name }}</strong><br>
-                        <span style="color: #666; font-size: 9px;">{{ mark.teacher.user.get_full_name|default:"" }}</span>
+                        <span style="color: #666; font-size: 8px;">{{ mark.teacher.user.get_full_name|default:"" }}</span>
                     </td>
-                    <td class="text-center">{{ mark.subject.coefficient }}</td>
-                    <td class="text-center fw-bold">
+                    <td class="coeff-col">{{ mark.subject.coefficient }}</td>
+                    <td class="mark-col fw-bold">
                         {% if mark.value is None %}AB{% else %}{{ mark.value }}{% endif %}
                     </td>
-                    <td class="text-center">
+                    <td class="total-col">
                         {% if mark.value is not None %}
                             {% widthratio mark.value 1 mark.subject.coefficient %}
                         {% else %}
                             0
                         {% endif %}
                     </td>
-                    <td>{{ mark.remark }}</td>
+                    <td class="remark-col">{{ mark.remark }}</td>
                 </tr>
             {% endfor %}
         </tbody>
         <tfoot>
             <tr>
-                <td class="text-right fw-bold">TOTAL</td>
-                <td class="text-center fw-bold">{{ total_coeff }}</td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td class="subject-col text-right fw-bold">TOTAL</td>
+                <td class="coeff-col fw-bold">{{ total_coeff }}</td>
+                <td class="mark-col"></td>
+                <td class="total-col"></td>
+                <td class="remark-col"></td>
             </tr>
         </tfoot>
     </table>

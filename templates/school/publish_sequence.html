@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Publish Sequences - EduResults CM{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Publish Sequences</h2>
+            <p class="text-muted">Manage the publication status of sequences. Publishing a sequence locks all teacher mark entry forms for that sequence and makes the results visible to students and parents.</p>
+        </div>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">All Sequences</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Academic Year</th>
+                            <th>Term</th>
+                            <th>Sequence</th>
+                            <th>Status</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sequence in sequences %}
+                            <tr>
+                                <td>{{ sequence.term.academic_year.label }}</td>
+                                <td>Term {{ sequence.term.name }}</td>
+                                <td class="fw-bold">Sequence {{ sequence.name }}</td>
+                                <td>
+                                    {% if sequence.is_published %}
+                                        <span class="badge bg-success"><i class="ti ti-check"></i> Published</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary"><i class="ti ti-lock-open"></i> Draft / Open</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <form method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="sequence" value="{{ sequence.id }}">
+                                        {% if sequence.is_published %}
+                                            <button type="submit" name="action" value="unpublish" class="btn btn-sm btn-outline-warning" onclick="return confirm('Are you sure you want to unpublish this sequence? Marks will become editable again.');">
+                                                <i class="ti ti-lock-open"></i> Unpublish
+                                            </button>
+                                        {% else %}
+                                            <button type="submit" name="action" value="publish" class="btn btn-sm btn-success" onclick="return confirm('Are you sure you want to publish this sequence? Marks will be locked and an email notification will be sent to parents.');">
+                                                <i class="ti ti-lock"></i> Publish
+                                            </button>
+                                        {% endif %}
+                                    </form>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4">No sequences have been created yet.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -45,24 +45,24 @@
       </a>
 
       <div class="nav-section">School</div>
-      <a href="#" class="nav-item {% block nav_structure %}{% endblock %}">
+      <a href="/admin/" class="nav-item {% block nav_structure %}{% endblock %}">
         <i class="ti ti-building-school"></i> School Structure
       </a>
-      <a href="#" class="nav-item {% block nav_students %}{% endblock %}">
+      <a href="/admin/accounts/student/" class="nav-item {% block nav_students %}{% endblock %}">
         <i class="ti ti-users"></i> Students
       </a>
-      <a href="#" class="nav-item {% block nav_teachers %}{% endblock %}">
+      <a href="/admin/accounts/teacher/" class="nav-item {% block nav_teachers %}{% endblock %}">
         <i class="ti ti-chalkboard"></i> Teachers
       </a>
-      <a href="#" class="nav-item {% block nav_parents %}{% endblock %}">
+      <a href="/admin/accounts/parent/" class="nav-item {% block nav_parents %}{% endblock %}">
         <i class="ti ti-heart-handshake"></i> Parents
       </a>
 
       <div class="nav-section">Results</div>
-      <a href="#" class="nav-item {% block nav_marks %}{% endblock %}">
+      <a href="{% url 'school:publish_sequence' %}" class="nav-item {% block nav_marks %}{% endblock %}">
         <i class="ti ti-chart-bar"></i> Marks & Results
       </a>
-      <a href="#" class="nav-item {% block nav_reports %}{% endblock %}">
+      <a href="{% url 'reports:admin_hub' %}" class="nav-item {% block nav_reports %}{% endblock %}">
         <i class="ti ti-file-download"></i> Report Cards
       </a>
 
@@ -71,10 +71,10 @@
       <a href="{% url 'accounts:dashboard' %}" class="nav-item {% block nav_t_dashboard %}{% endblock %}">
         <i class="ti ti-layout-dashboard"></i> Dashboard
       </a>
-      <a href="#" class="nav-item {% block nav_t_marks %}{% endblock %}">
+      <a href="{% url 'marks:select_assignment' %}" class="nav-item {% block nav_t_marks %}{% endblock %}">
         <i class="ti ti-pencil"></i> Enter Marks
       </a>
-      <a href="#" class="nav-item {% block nav_t_summary %}{% endblock %}">
+      <a href="{% url 'marks:select_assignment' %}" class="nav-item {% block nav_t_summary %}{% endblock %}">
         <i class="ti ti-chart-bar"></i> Class Summary
       </a>
 
@@ -83,10 +83,10 @@
       <a href="{% url 'accounts:dashboard' %}" class="nav-item {% block nav_s_dashboard %}{% endblock %}">
         <i class="ti ti-layout-dashboard"></i> Dashboard
       </a>
-      <a href="#" class="nav-item {% block nav_s_results %}{% endblock %}">
+      <a href="{% url 'marks:student_results' %}" class="nav-item {% block nav_s_results %}{% endblock %}">
         <i class="ti ti-chart-bar"></i> My Results
       </a>
-      <a href="#" class="nav-item {% block nav_s_history %}{% endblock %}">
+      <a href="{% url 'marks:student_results' %}" class="nav-item {% block nav_s_history %}{% endblock %}">
         <i class="ti ti-history"></i> Academic History
       </a>
 
@@ -95,13 +95,13 @@
       <a href="{% url 'accounts:dashboard' %}" class="nav-item {% block nav_p_dashboard %}{% endblock %}">
         <i class="ti ti-layout-dashboard"></i> Dashboard
       </a>
-      <a href="#" class="nav-item {% block nav_p_results %}{% endblock %}">
+      <a href="{% url 'marks:parent_results' %}" class="nav-item {% block nav_p_results %}{% endblock %}">
         <i class="ti ti-chart-bar"></i> Results
       </a>
       {% endif %}
 
       <div class="nav-section">Account</div>
-      <a href="#" class="nav-item {% block nav_profile %}{% endblock %}">
+      <a href="/admin/password_change/" class="nav-item {% block nav_profile %}{% endblock %}">
         <i class="ti ti-user"></i> My Profile
       </a>
       <a href="{% url 'accounts:logout' %}" class="nav-item nav-item-danger">

@@ -1,41 +1,49 @@
 {% extends 'base.html' %}
-{% block title %}Admin Dashboard — EduResults CM{% endblock %}
-{% block page_title %}Dashboard{% endblock %}
-{% block nav_dashboard %}active{% endblock %}
+
+{% block title %}Admin Dashboard - EduResults CM{% endblock %}
 
 {% block content %}
-<div class="page-header">
-  <h1>Good day, {{ user.get_full_name }}</h1>
-  <p>Administrator · EduResults CM</p>
-</div>
-<div class="stats-grid">
-  <div class="stat-card">
-    <div class="stat-label"><i class="ti ti-users"></i> Students</div>
-    <div class="stat-value">0</div>
-    <div class="stat-sub">Enrolled this year</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-label"><i class="ti ti-chalkboard"></i> Teachers</div>
-    <div class="stat-value">0</div>
-    <div class="stat-sub">Active accounts</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-label"><i class="ti ti-building-school"></i> Classes</div>
-    <div class="stat-value">0</div>
-    <div class="stat-sub">This academic year</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-label"><i class="ti ti-chart-bar"></i> Results</div>
-    <div class="stat-value">0</div>
-    <div class="stat-sub">Published sequences</div>
-  </div>
-</div>
-<div class="card">
-  <div class="card-header-row">
-    <div class="card-title">Getting started</div>
-  </div>
-  <p style="color:var(--text-muted); font-size:13px;">
-    Start by setting up the school structure — create an Academic Year, then add Classes and Subjects.
-  </p>
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Welcome, Administrator</h2>
+            <p class="text-muted">Manage the entire school system from here.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100 border-top border-primary border-4">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="display-4 text-primary mb-3"><i class="ti ti-database"></i></div>
+                    <h5 class="card-title">System Management</h5>
+                    <p class="card-text text-muted flex-grow-1">Manage academic years, terms, classes, subjects, users, and enrollments using the built-in system interface.</p>
+                    <a href="/admin/" class="btn btn-outline-primary mt-3">Open Admin Panel</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100 border-top border-success border-4">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="display-4 text-success mb-3"><i class="ti ti-broadcast"></i></div>
+                    <h5 class="card-title">Publish Results</h5>
+                    <p class="card-text text-muted flex-grow-1">Lock teacher mark entries for a sequence and officially publish the results to parents and students.</p>
+                    <a href="{% url 'school:publish_sequence' %}" class="btn btn-outline-success mt-3">Publish Sequences</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100 border-top border-info border-4 opacity-50">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="display-4 text-info mb-3"><i class="ti ti-file-certificate"></i></div>
+                    <h5 class="card-title">Official Report Cards</h5>
+                    <p class="card-text text-muted flex-grow-1">Generate and download official PDF report cards for classes.</p>
+                    <a href="{% url 'reports:admin_hub' %}" class="btn btn-outline-info mt-3">Go to Reports Hub</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -1,17 +1,27 @@
 {% extends 'base.html' %}
-{% block title %}Student Dashboard — EduResults CM{% endblock %}
-{% block page_title %}Dashboard{% endblock %}
-{% block nav_s_dashboard %}active{% endblock %}
+
+{% block title %}Student Dashboard - EduResults CM{% endblock %}
 
 {% block content %}
-<div class="page-header">
-  <h1>Good day, {{ user.get_full_name }}</h1>
-  <p>Student Portal · EduResults CM</p>
-</div>
-<div class="card">
-  <div class="card-title">My Results</div>
-  <p style="color:var(--text-muted); font-size:13px; margin-top:.5rem;">
-    No results published yet. Check back after your next examination sequence.
-  </p>
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Welcome, {{ request.user.first_name }}</h2>
+            <p class="text-muted">Access your academic records and official results.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100 border-top border-primary border-4">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="display-4 text-primary mb-3"><i class="ti ti-chart-bar"></i></div>
+                    <h5 class="card-title">View Results</h5>
+                    <p class="card-text text-muted flex-grow-1">Check your published marks, sequence averages, and class rankings.</p>
+                    <a href="{% url 'marks:student_results' %}" class="btn btn-primary mt-3">My Results</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

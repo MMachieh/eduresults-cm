@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}Report Cards Hub - EduResults CM{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Official Report Cards</h2>
+            <p class="text-muted">View, generate and download official PDF report cards.</p>
+        </div>
+    </div>
+
+    <!-- Individual Report Card Viewer -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-4">View Report Card</h5>
+            <p>Select a published sequence and student to view the report card online before downloading.</p>
+            
+            <form method="get" action="" id="viewForm" onsubmit="return handleView()">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <label for="sequence_view" class="form-label fw-bold">1. Select Sequence</label>
+                        <select id="sequence_view" class="form-select" required onchange="updateStudents()">
+                            <option value="" selected disabled>Choose published sequence...</option>
+                            {% for seq in sequences %}
+                                <option value="{{ seq.id }}" data-academic-year="{{ seq.term.academic_year.id }}">{{ seq }}</option>
+                            {% empty %}
+                                <option value="" disabled>No published sequences available.</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-5">
+                        <label for="student_id" class="form-label fw-bold">2. Select Student</label>
+                        <select id="student_id" class="form-select" required>
+                            <option value="" selected disabled>Choose student...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-info w-100">
+                            <i class="ti ti-eye"></i> View Card
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Batch PDF Download -->
+    <div class="card shadow">
+        <div class="card-body">
+            <h5 class="card-title mb-4">Batch PDF Download</h5>
+            <p>Select a published sequence and a class to generate a ZIP file containing the official PDF report cards for all enrolled students.</p>
+            
+            <form method="get" action="" id="downloadForm" onsubmit="return handleDownload()">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <label for="sequence" class="form-label fw-bold">1. Select Sequence</label>
+                        <select id="sequence" class="form-select" required>
+                            <option value="" selected disabled>Choose published sequence...</option>
+                            {% for seq in sequences %}
+                                <option value="{{ seq.id }}">{{ seq }}</option>
+                            {% empty %}
+                                <option value="" disabled>No published sequences available.</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-5">
+                        <label for="class_id" class="form-label fw-bold">2. Select Class</label>
+                        <select id="class_id" class="form-select" required>
+                            <option value="" selected disabled>Choose class...</option>
+                            {% for cls in classes %}
+                                <option value="{{ cls.id }}">{{ cls }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100" {% if not sequences %}disabled{% endif %}>
+                            <i class="ti ti-download"></i> Download ZIP
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Get students for selected sequence
+async function updateStudents() {
+    var seq_id = document.getElementById('sequence_view').value;
+    var seq_option = document.querySelector(`#sequence_view option[value="${seq_id}"]`);
+    var ay_id = seq_option ? seq_option.getAttribute('data-academic-year') : null;
+    
+    if(!seq_id || !ay_id) {
+        document.getElementById('student_id').innerHTML = '<option value="" selected disabled>Choose student...</option>';
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/enrollments/?academic_year=${ay_id}`);
+        const data = await response.json();
+        
+        let options = '<option value="" selected disabled>Choose student...</option>';
+        data.enrollments.forEach(e => {
+            options += `<option value="${e.student_id}">${e.student_name} (${e.matricule})</option>`;
+        });
+        
+        document.getElementById('student_id').innerHTML = options;
+    } catch(e) {
+        console.error('Error loading students:', e);
+    }
+}
+
+function handleView() {
+    var seq_id = document.getElementById('sequence_view').value;
+    var student_id = document.getElementById('student_id').value;
+    if(seq_id && student_id) {
+        var url = "{% url 'reports:view_report_card' sequence_id=999999 student_id=888888 %}";
+        url = url.replace('999999', seq_id).replace('888888', student_id);
+        window.location.href = url;
+        return false;
+    }
+    return true;
+}
+
+function handleDownload() {
+    var seq_id = document.getElementById('sequence').value;
+    var class_id = document.getElementById('class_id').value;
+    if(seq_id && class_id) {
+        var url = "{% url 'reports:download_zip' sequence_id=999999 class_id=888888 %}";
+        url = url.replace('999999', seq_id).replace('888888', class_id);
+        window.location.href = url;
+        return false;
+    }
+    return true;
+}
+</script>
+{% endblock %}

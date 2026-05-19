@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Select Assignment - EduResults CM{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Mark Entry - Select Assignment</h2>
+            <p class="text-muted">Choose a class, subject, and sequence to enter marks.</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="assignment" class="form-label fw-bold">Select Your Assignment</label>
+                            <select name="assignment" id="assignment" class="form-select" required>
+                                <option value="" selected disabled>Choose a class and subject...</option>
+                                {% for assignment in assignments %}
+                                    <option value="{{ assignment.id }}">
+                                        {{ assignment.class_group }} - {{ assignment.subject }} ({{ assignment.academic_year }})
+                                    </option>
+                                {% empty %}
+                                    <option value="" disabled>No assignments found. Please contact the administrator.</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="sequence" class="form-label fw-bold">Select Sequence</label>
+                            <select name="sequence" id="sequence" class="form-select" required>
+                                <option value="" selected disabled>Choose a sequence...</option>
+                                {% for sequence in sequences %}
+                                    <option value="{{ sequence.id }}">
+                                        {{ sequence }}
+                                        {% if sequence.is_published %} (Published - Read Only){% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" {% if not assignments %}disabled{% endif %}>Continue to Mark Sheet</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

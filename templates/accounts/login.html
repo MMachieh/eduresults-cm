@@ -57,7 +57,10 @@
 
       <p class="text-center mt-3" style="font-size:12px; color:var(--text-muted)">
         Are you a parent?
-        <a href="#" style="color:var(--navy)">Register with your child's matricule →</a>
+        <a href="{% url 'accounts:parent_register' %}" style="color:var(--navy)">Register with your child's matricule →</a>
+      </p>
+      <p class="text-center mt-1" style="font-size:12px; color:var(--text-muted)">
+        <a href="{% url 'accounts:password_reset' %}" style="color:var(--text-muted)">Forgot your password?</a>
       </p>
     </div>
   </div>

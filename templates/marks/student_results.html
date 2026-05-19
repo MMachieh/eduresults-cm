@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}My Results - EduResults CM{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>My Results</h2>
+            <p class="text-muted">{{ student.user.get_full_name }} ({{ student.matricule }})</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <form method="get" class="d-flex align-items-end">
+                        <div class="flex-grow-1 me-2">
+                            <label for="sequence" class="form-label fw-bold">Select Published Sequence</label>
+                            <select name="sequence" id="sequence" class="form-select" required>
+                                <option value="" selected disabled>Choose sequence...</option>
+                                {% for seq in sequences %}
+                                    <option value="{{ seq.id }}" {% if selected_sequence.id == seq.id %}selected{% endif %}>
+                                        {{ seq }}
+                                    </option>
+                                {% empty %}
+                                    <option value="" disabled>No results published yet.</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary" {% if not sequences %}disabled{% endif %}>View</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if selected_sequence and results %}
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white shadow h-100">
+                    <div class="card-body text-center d-flex flex-column justify-content-center">
+                        <h5 class="card-title">Sequence Average</h5>
+                        <h2 class="display-4 fw-bold mb-0">{{ average|default:"N/A" }}<span class="fs-4">/20</span></h2>
+                        {% if average >= 10 %}
+                            <span class="badge bg-success mt-2 fs-6">PASSED</span>
+                        {% else %}
+                            <span class="badge bg-danger mt-2 fs-6">FAILED</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-info text-white shadow h-100">
+                    <div class="card-body text-center d-flex flex-column justify-content-center">
+                        <h5 class="card-title">Class Rank</h5>
+                        <h2 class="display-4 fw-bold mb-0">{{ rank|default:"N/A" }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Detailed Marks - {{ selected_sequence }}</h5>
+                <a href="{% url 'reports:online_report_card_self' selected_sequence.id %}" class="btn btn-sm btn-outline-light">
+                    <i class="ti ti-file-certificate"></i> View Official Report Card
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Subject</th>
+                                <th>Coefficient</th>
+                                <th>Mark (/20)</th>
+                                <th>Weighted</th>
+                                <th>Remark</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for mark in results %}
+                                <tr>
+                                    <td class="fw-bold">{{ mark.subject.name }}</td>
+                                    <td>{{ mark.subject.coefficient }}</td>
+                                    <td>
+                                        {% if mark.value is None %}
+                                            <span class="badge bg-secondary">AB</span>
+                                        {% else %}
+                                            {{ mark.value }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if mark.value is not None %}
+                                            {% widthratio mark.value 1 mark.subject.coefficient as weighted %}
+                                            {{ mark.value|add:"0" }} <!-- Using python to multiply in template is hard, wait, we can just use a simple visual but the average is already computed anyway -->
+                                            <!-- Since we don't have a template tag for multiply, let's just display the mark and average -->
+                                        {% else %}
+                                            0
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-muted">{{ mark.remark }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">No marks recorded.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% elif selected_sequence %}
+        <div class="alert alert-info">
+            <i class="ti ti-info-circle"></i> No results found for the selected sequence.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

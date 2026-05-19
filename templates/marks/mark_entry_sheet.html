@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Mark Sheet - EduResults CM{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-3">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'accounts:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'marks:select_assignment' %}">Assignments</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Mark Sheet</li>
+                </ol>
+            </nav>
+            <h2>{{ assignment.subject }} - {{ assignment.class_group }}</h2>
+            <h5 class="text-muted">{{ sequence }} | {{ assignment.academic_year }}</h5>
+            
+            {% if is_locked %}
+                <div class="alert alert-warning mt-3">
+                    <i class="ti ti-lock"></i> This sequence has been published. Marks are locked and cannot be edited.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body p-0">
+            <form method="post">
+                {% csrf_token %}
+                {{ formset.management_form }}
+                
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0 align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th style="width: 5%">#</th>
+                                <th style="width: 25%">Student Name</th>
+                                <th style="width: 20%">Matricule</th>
+                                <th style="width: 15%">Mark (/20)</th>
+                                <th style="width: 35%">Remark (Optional)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for form in formset %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td class="fw-bold">
+                                        {{ form.instance.student.user.get_full_name }}
+                                        {{ form.id }}
+                                    </td>
+                                    <td>{{ form.instance.student.matricule }}</td>
+                                    <td>
+                                        {% if is_locked %}
+                                            <span class="badge bg-secondary fs-6">{{ form.instance.value|default_if_none:"AB" }}</span>
+                                        {% else %}
+                                            {{ form.value }}
+                                            {% if form.value.errors %}
+                                                <div class="text-danger small mt-1">
+                                                    {{ form.value.errors|striptags }}
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if is_locked %}
+                                            {{ form.instance.remark }}
+                                        {% else %}
+                                            {{ form.remark }}
+                                            {% if form.remark.errors %}
+                                                <div class="text-danger small mt-1">
+                                                    {{ form.remark.errors|striptags }}
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">
+                                        No students enrolled in this class for the selected academic year.
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                {% if not is_locked and formset|length > 0 %}
+                    <div class="card-footer bg-light text-end p-3">
+                        <a href="{% url 'marks:select_assignment' %}" class="btn btn-outline-secondary me-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="ti ti-device-floppy"></i> Save Marks
+                        </button>
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
