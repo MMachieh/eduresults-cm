@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}Report Card - {{ student.user.get_full_name }}{% endblock %}
+
+{% block content %}
+<style>
+    @media print {
+        body { background-color: #fff; }
+        .d-print-none { display: none !important; }
+        .card { border: none !important; box-shadow: none !important; }
+        .card-body { padding: 0 !important; }
+        .print-container { max-width: 100% !important; margin: 0 !important; }
+    }
+</style>
+
+<div class="container mt-4 mb-5 print-container">
+    <div class="row mb-3 d-print-none">
+        <div class="col">
+            <button class="btn btn-outline-secondary" onclick="window.print()">
+                <i class="ti ti-printer"></i> Print Draft
+            </button>
+            {% if request.user.is_admin %}
+                <a href="{% url 'reports:download_pdf' sequence.id student.id %}" class="btn btn-primary ms-2">
+                    <i class="ti ti-file-type-pdf"></i> Download Official PDF
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow border-2 border-dark">
+        <div class="card-body p-5">
+            <!-- Header -->
+            <div class="text-center border-bottom border-dark pb-3 mb-4">
+                <h1 class="text-uppercase fw-bold" style="color: #0C447C;">EduResults CM</h1>
+                <h4 class="text-uppercase text-muted mb-2">Republic of Cameroon</h4>
+                <h5 class="fw-bold bg-light d-inline-block px-3 py-1 border border-secondary">
+                    Official Sequence Report Card
+                </h5>
+                <p class="mb-0 mt-2 fw-bold">
+                    Academic Year: {{ sequence.term.academic_year.label }} &nbsp;|&nbsp; 
+                    Term: {{ sequence.term.name }} &nbsp;|&nbsp; 
+                    Sequence: {{ sequence.name }}
+                </p>
+            </div>
+
+            <!-- Student Info -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <table class="table table-sm table-borderless mb-0">
+                        <tr><th style="width: 120px;">Name:</th><td class="fw-bold fs-5">{{ student.user.get_full_name|upper }}</td></tr>
+                        <tr><th>Matricule:</th><td>{{ student.matricule }}</td></tr>
+                        <tr><th>DOB:</th><td>{{ student.date_of_birth|default:"N/A" }}</td></tr>
+                    </table>
+                </div>
+                <div class="col-md-6 text-end">
+                    <table class="table table-sm table-borderless mb-0 float-end" style="width: auto;">
+                        <tr><th class="text-end">Class:</th><td class="text-start fw-bold">{{ class_group|default:"N/A" }}</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Marks Table -->
+            <table class="table table-bordered border-dark align-middle">
+                <thead class="table-light">
+                    <tr class="text-center text-uppercase">
+                        <th>Subject</th>
+                        <th style="width: 10%">Coeff</th>
+                        <th style="width: 15%">Mark (/20)</th>
+                        <th style="width: 15%">Total</th>
+                        <th style="width: 25%">Teacher Remark</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mark in marks %}
+                        <tr>
+                            <td class="fw-bold">{{ mark.subject.name }}<br><small class="text-muted fw-normal">{{ mark.teacher.user.get_full_name|default:"" }}</small></td>
+                            <td class="text-center">{{ mark.subject.coefficient }}</td>
+                            <td class="text-center fw-bold">
+                                {% if mark.value is None %}AB{% else %}{{ mark.value }}{% endif %}
+                            </td>
+                            <td class="text-center">
+                                <!-- Approximation for display -->
+                                {% if mark.value is not None %}
+                                    {% widthratio mark.value 1 mark.subject.coefficient %}
+                                {% else %}
+                                    0
+                                {% endif %}
+                            </td>
+                            <td>{{ mark.remark }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-3">No subjects found for this sequence.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot class="table-light fw-bold text-center border-dark">
+                    <tr>
+                        <td class="text-end text-uppercase">Total</td>
+                        <td>{{ total_coeff }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <!-- Summary & Signatures -->
+            <div class="row mt-5">
+                <div class="col-md-6">
+                    <div class="border border-dark p-3 bg-light">
+                        <table class="table table-sm table-borderless mb-0">
+                            <tr>
+                                <th class="fs-5">Sequence Average:</th>
+                                <td class="fs-5 fw-bold">{{ average|default:"N/A" }} / 20</td>
+                            </tr>
+                            <tr>
+                                <th>Class Rank:</th>
+                                <td class="fw-bold">{{ rank|default:"N/A" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Status:</th>
+                                <td class="fw-bold {% if is_pass %}text-success{% else %}text-danger{% endif %}">
+                                    {% if is_pass %}PROMOTED / PASSED{% else %}FAILED{% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-6 text-end d-flex flex-column justify-content-end">
+                    <div class="mt-4">
+                        <p class="mb-5 fw-bold text-uppercase">The Principal</p>
+                        <hr style="width: 200px; border-color: #000; margin-left: auto;" class="mb-1">
+                        <p class="text-muted small">Signature & Stamp</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

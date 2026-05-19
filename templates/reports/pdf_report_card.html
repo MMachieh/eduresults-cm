@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Report Card - {{ student.matricule }}</title>
+    <style>
+        @page {
+            size: a4 portrait;
+            margin: 2cm;
+            @frame footer {
+                -pdf-frame-content: footerContent;
+                bottom: 1cm;
+                margin-left: 2cm;
+                margin-right: 2cm;
+                height: 1cm;
+            }
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 11px;
+            color: #000;
+        }
+        h1, h2, h3, h4, h5, p {
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #0C447C;
+            font-size: 24px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .header h4 {
+            font-size: 14px;
+            color: #555;
+            text-transform: uppercase;
+        }
+        .header-title {
+            background-color: #eee;
+            border: 1px solid #333;
+            display: inline-block;
+            padding: 5px 15px;
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .info-table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .info-table td {
+            padding: 3px;
+        }
+        .marks-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            table-layout: fixed;
+        }
+        .marks-table th, .marks-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            vertical-align: top;
+            word-wrap: break-word;
+        }
+        .marks-table th {
+            background-color: #f0f0f0;
+            text-align: center;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 10px;
+        }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .fw-bold { font-weight: bold; }
+        
+        .summary-box {
+            border: 1px solid #000;
+            background-color: #f9f9f9;
+            padding: 10px;
+            width: 50%;
+        }
+        .summary-table {
+            width: 100%;
+        }
+        .summary-table th { text-align: left; padding: 5px 0; }
+        .summary-table td { text-align: right; font-weight: bold; }
+        
+        .signature-box {
+            text-align: right;
+            margin-top: 80px;
+            padding-top: 20px;
+        }
+        .signature-line {
+            border-top: 1px solid #000;
+            width: 200px;
+            margin-left: auto;
+            margin-top: 80px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>EduResults CM</h1>
+        <h4>Republic of Cameroon</h4>
+        <div class="header-title">OFFICIAL SEQUENCE REPORT CARD</div>
+        <p style="margin-top: 10px; font-weight: bold;">
+            Academic Year: {{ sequence.term.academic_year.label }} &nbsp;|&nbsp; 
+            Term: {{ sequence.term.name }} &nbsp;|&nbsp; 
+            Sequence: {{ sequence.name }}
+        </p>
+    </div>
+
+    <table class="info-table">
+        <tr>
+            <td style="width: 100px;"><strong>Name:</strong></td>
+            <td class="fw-bold" style="font-size: 14px;">{{ student.user.get_full_name|upper }}</td>
+            <td class="text-right"><strong>Class:</strong></td>
+            <td class="text-right fw-bold">{{ class_group|default:"N/A" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Matricule:</strong></td>
+            <td>{{ student.matricule }}</td>
+            <td class="text-right"><strong>DOB:</strong></td>
+            <td class="text-right">{{ student.date_of_birth|default:"N/A" }}</td>
+        </tr>
+    </table>
+
+    <table class="marks-table">
+        <thead>
+            <tr>
+                <th style="width: 30%; text-align: left;">Subject</th>
+                <th style="width: 8%">Coeff</th>
+                <th style="width: 10%">Mark (/20)</th>
+                <th style="width: 10%">Total</th>
+                <th style="width: 22%; text-align: left;">Teacher Remark</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mark in marks %}
+                <tr>
+                    <td>
+                        <strong>{{ mark.subject.name }}</strong><br>
+                        <span style="color: #666; font-size: 9px;">{{ mark.teacher.user.get_full_name|default:"" }}</span>
+                    </td>
+                    <td class="text-center">{{ mark.subject.coefficient }}</td>
+                    <td class="text-center fw-bold">
+                        {% if mark.value is None %}AB{% else %}{{ mark.value }}{% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if mark.value is not None %}
+                            {% widthratio mark.value 1 mark.subject.coefficient %}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </td>
+                    <td>{{ mark.remark }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td class="text-right fw-bold">TOTAL</td>
+                <td class="text-center fw-bold">{{ total_coeff }}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="summary-box">
+        <table class="summary-table">
+            <tr>
+                <th>Sequence Average:</th>
+                <td style="font-size: 14px;">{{ average|default:"N/A" }} / 20</td>
+            </tr>
+            <tr>
+                <th>Class Rank:</th>
+                <td>{{ rank|default:"N/A" }}</td>
+            </tr>
+            <tr>
+                <th>Status:</th>
+                <td style="color: {% if is_pass %}green{% else %}red{% endif %};">
+                    {% if is_pass %}PROMOTED / PASSED{% else %}FAILED{% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="signature-box">
+        <strong>THE PRINCIPAL</strong>
+        <div class="signature-line"></div>
+        <span style="font-size: 9px; color: #666;">Signature & Stamp</span>
+    </div>
+
+    <div id="footerContent" style="text-align: center; font-size: 9px; color: #999;">
+        Generated securely by EduResults CM | Page <pdf:pagenumber> of <pdf:pagecount>
+    </div>
+
+</body>
+</html>
