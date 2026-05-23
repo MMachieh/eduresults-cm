@@ -10,7 +10,7 @@ from .services import compute_sequence_average, get_student_rank
 from accounts.models import Student
 
 @login_required
-@role_required(['teacher'])
+@role_required('teacher')
 def select_assignment(request):
     teacher = request.user.teacher_profile
     assignments = TeacherAssignment.objects.filter(teacher=teacher).select_related('subject', 'class_group', 'academic_year')
@@ -28,7 +28,7 @@ def select_assignment(request):
     })
 
 @login_required
-@role_required(['teacher'])
+@role_required('teacher')
 def mark_entry_sheet(request, assignment_id, sequence_id):
     assignment = get_object_or_404(TeacherAssignment, id=assignment_id, teacher=request.user.teacher_profile)
     sequence = get_object_or_404(Sequence, id=sequence_id)
@@ -69,7 +69,7 @@ def mark_entry_sheet(request, assignment_id, sequence_id):
     })
 
 @login_required
-@role_required(['student'])
+@role_required('student')
 def student_results_view(request):
     student = request.user.student_profile
     sequences = Sequence.objects.filter(is_published=True).select_related('term__academic_year')
@@ -80,6 +80,12 @@ def student_results_view(request):
     avg = None
     rank = None
     
+    if sequence_id:
+        try:
+            sequence_id = int(sequence_id)
+        except ValueError:
+            sequence_id = None
+            
     if sequence_id:
         selected_sequence = get_object_or_404(Sequence, id=sequence_id, is_published=True)
         marks = Mark.objects.filter(student=student, sequence=selected_sequence).select_related('subject')
@@ -101,7 +107,7 @@ def student_results_view(request):
     })
 
 @login_required
-@role_required(['parent'])
+@role_required('parent')
 def parent_results_view(request):
     parent = request.user.parent_profile
     students = parent.students.all()
@@ -117,6 +123,18 @@ def parent_results_view(request):
     
     sequences = Sequence.objects.filter(is_published=True).select_related('term__academic_year')
     
+    if student_id:
+        try:
+            student_id = int(student_id)
+        except ValueError:
+            student_id = None
+            
+    if sequence_id:
+        try:
+            sequence_id = int(sequence_id)
+        except ValueError:
+            sequence_id = None
+            
     if student_id:
         selected_student = get_object_or_404(students, id=student_id)
         if sequence_id:

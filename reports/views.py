@@ -54,7 +54,7 @@ def view_online_report_card(request, sequence_id, student_id=None):
     return render(request, 'reports/online_report_card.html', context)
 
 @login_required
-@role_required(['admin'])
+@role_required('admin')
 def download_pdf_report_card(request, sequence_id, student_id):
     sequence = get_object_or_404(Sequence, id=sequence_id, is_published=True)
     student = get_object_or_404(Student, id=student_id)
@@ -75,7 +75,7 @@ def download_pdf_report_card(request, sequence_id, student_id):
     return response
 
 @login_required
-@role_required(['admin'])
+@role_required('admin')
 def download_class_zip_reports(request, sequence_id, class_id):
     sequence = get_object_or_404(Sequence, id=sequence_id, is_published=True)
     class_group = get_object_or_404(Class, id=class_id)
@@ -103,7 +103,7 @@ def download_class_zip_reports(request, sequence_id, class_id):
     return response
 
 @login_required
-@role_required(['admin'])
+@role_required('admin')
 def view_report_card_admin(request, sequence_id, student_id):
     """Allow admin to view report card online before downloading"""
     sequence = get_object_or_404(Sequence, id=sequence_id, is_published=True)
@@ -113,7 +113,7 @@ def view_report_card_admin(request, sequence_id, student_id):
     return render(request, 'reports/online_report_card.html', context)
 
 @login_required
-@role_required(['admin'])
+@role_required('admin')
 def admin_report_hub(request):
     sequences = Sequence.objects.filter(is_published=True).select_related('term__academic_year')
     classes = Class.objects.all().select_related('academic_year')
@@ -124,13 +124,18 @@ def admin_report_hub(request):
     })
 
 @login_required
-@role_required(['admin'])
+@role_required('admin')
 def api_get_enrollments(request):
     """API endpoint to get students for a given academic year"""
     ay_id = request.GET.get('academic_year')
     
     if not ay_id:
         return JsonResponse({'error': 'academic_year required'}, status=400)
+        
+    try:
+        ay_id = int(ay_id)
+    except ValueError:
+        return JsonResponse({'error': 'invalid academic_year'}, status=400)
     
     try:
         enrollments = Enrollment.objects.filter(

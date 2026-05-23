@@ -3,7 +3,7 @@ from django.urls import path, include
 from django.shortcuts import redirect
 
 urlpatterns = [
-    path('admin/',     admin.site.urls),
+    path('school-admin-secure-2025/', admin.site.urls),
     path('accounts/',  include('accounts.urls')),
     path('marks/',     include('marks.urls')),
     path('school/',    include('school.urls')),
@@ -12,6 +12,7 @@ urlpatterns = [
     path('',           lambda request: redirect('accounts:login')),
 ]
 
+handler400 = 'accounts.views.error_400'
 handler403 = 'accounts.views.error_403'
 handler404 = 'accounts.views.error_404'
 handler500 = 'accounts.views.error_500'

@@ -6,7 +6,7 @@ from django.contrib import messages
 from notifications.services import notify_parents_sequence_published
 
 @login_required
-@role_required(['admin'])
+@role_required('admin')
 def admin_publish_sequence(request):
     sequences = Sequence.objects.all().select_related('term__academic_year').order_by('-term__academic_year__start_date', 'term', 'name')
     
@@ -15,6 +15,12 @@ def admin_publish_sequence(request):
         action = request.POST.get('action')
         
         if sequence_id:
+            try:
+                sequence_id = int(sequence_id)
+            except ValueError:
+                messages.error(request, "Invalid sequence ID.")
+                return redirect('school:publish_sequence')
+                
             sequence = get_object_or_404(Sequence, id=sequence_id)
             if action == 'publish':
                 sequence.is_published = True

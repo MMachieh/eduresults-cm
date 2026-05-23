@@ -2,13 +2,15 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import logout, login
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
-from .forms import ParentRegistrationForm
+from .forms import ParentRegistrationForm, CustomAuthenticationForm
 from .models import Parent, Student
 from .decorators import role_required
+from django_ratelimit.decorators import ratelimit
 
 
 class RoleLoginView(LoginView):
     template_name = 'accounts/login.html'
+    form_class = CustomAuthenticationForm
 
     def get_success_url(self):
         user = self.request.user
@@ -20,7 +22,7 @@ class RoleLoginView(LoginView):
 
 
 @login_required
-@role_required(['admin', 'teacher', 'student', 'parent'])
+@role_required('admin', 'teacher', 'student', 'parent')
 def dashboard(request):
     user = request.user
     if user.is_admin():
@@ -39,6 +41,7 @@ def logout_view(request):
     return redirect('accounts:login')
 
 
+@ratelimit(key='ip', rate='5/h', block=True)
 def parent_register(request):
     if request.method == 'POST':
         form = ParentRegistrationForm(request.POST)
@@ -61,6 +64,9 @@ def parent_register(request):
     else:
         form = ParentRegistrationForm()
     return render(request, 'accounts/register_parent.html', {'form': form})
+
+def error_400(request, exception):
+    return render(request, 'errors/400.html', status=400)
 
 def error_403(request, exception):
     return render(request, 'errors/403.html', status=403)

@@ -1,6 +1,13 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import User, Student
+import re
+
+class CustomAuthenticationForm(AuthenticationForm):
+    error_messages = {
+        'invalid_login': "Invalid username or password.",
+        'inactive': "This account is inactive.",
+    }
 
 class ParentRegistrationForm(UserCreationForm):
     first_name = forms.CharField(max_length=150, required=True)
@@ -20,3 +27,12 @@ class ParentRegistrationForm(UserCreationForm):
         except Student.DoesNotExist:
             raise forms.ValidationError("No student found with this matricule number. Please check and try again.")
         return matricule
+
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data.get('phone_number')
+        if phone_number:
+            # Strip spaces
+            phone_number = phone_number.replace(' ', '')
+            if not re.match(r'^\+?[0-9]{9,15}$', phone_number):
+                raise forms.ValidationError("Enter a valid phone number (e.g. +237612345678).")
+        return phone_number
