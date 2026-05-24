@@ -15,12 +15,15 @@
 
 <div class="container mt-4 mb-5 print-container">
     <div class="row mb-3 d-print-none">
-        <div class="col">
-            <button class="btn btn-outline-secondary" onclick="window.print()">
+        <div class="col d-flex gap-2 flex-wrap">
+            <button class="btn btn-outline-secondary" onclick="window.history.back()">
+                <i class="ti ti-arrow-left"></i> Back
+            </button>
+            <button class="btn btn-outline-primary" onclick="window.print()">
                 <i class="ti ti-printer"></i> Print Draft
             </button>
             {% if request.user.is_admin %}
-                <a href="{% url 'reports:download_pdf' sequence.id student.id %}" class="btn btn-primary ms-2">
+                <a href="{% url 'reports:download_pdf' sequence.id student.id %}" class="btn btn-primary">
                     <i class="ti ti-file-type-pdf"></i> Download Official PDF
                 </a>
             {% endif %}
@@ -37,8 +40,8 @@
                     Official Sequence Report Card
                 </h5>
                 <p class="mb-0 mt-2 fw-bold">
-                    Academic Year: {{ sequence.term.academic_year.label }} &nbsp;|&nbsp; 
-                    Term: {{ sequence.term.name }} &nbsp;|&nbsp; 
+                    Academic Year: {{ sequence.term.academic_year.label }} &nbsp;|&nbsp;
+                    Term: {{ sequence.term.name }} &nbsp;|&nbsp;
                     Sequence: {{ sequence.name }}
                 </p>
             </div>
@@ -47,81 +50,91 @@
             <div class="row mb-4">
                 <div class="col-md-6">
                     <table class="table table-sm table-borderless mb-0">
-                        <tr><th style="width: 120px;">Name:</th><td class="fw-bold fs-5">{{ student.user.get_full_name|upper }}</td></tr>
+                        <tr><th style="width:130px;">Name:</th><td class="fw-bold fs-5">{{ student.user.get_full_name|upper }}</td></tr>
                         <tr><th>Matricule:</th><td>{{ student.matricule }}</td></tr>
-                        <tr><th>DOB:</th><td>{{ student.date_of_birth|default:"N/A" }}</td></tr>
+                        <tr><th>Date of Birth:</th><td>{{ student.date_of_birth|default:"N/A" }}</td></tr>
                     </table>
                 </div>
-                <div class="col-md-6 text-end">
-                    <table class="table table-sm table-borderless mb-0 float-end" style="width: auto;">
-                        <tr><th class="text-end">Class:</th><td class="text-start fw-bold">{{ class_group|default:"N/A" }}</td></tr>
+                <div class="col-md-6">
+                    <table class="table table-sm table-borderless mb-0 float-end" style="width:auto;">
+                        <tr><th class="text-end pe-3">Class:</th><td class="fw-bold">{{ class_group|default:"N/A" }}</td></tr>
                     </table>
                 </div>
             </div>
 
             <!-- Marks Table -->
             <table class="table table-bordered border-dark align-middle">
-                <thead class="table-light">
+                <thead class="table-dark">
                     <tr class="text-center text-uppercase">
-                        <th>Subject</th>
-                        <th style="width: 10%">Coeff</th>
-                        <th style="width: 15%">Mark (/20)</th>
-                        <th style="width: 15%">Total</th>
-                        <th style="width: 25%">Teacher Remark</th>
+                        <th class="text-start">Subject</th>
+                        <th style="width:8%">Coeff</th>
+                        <th style="width:12%">Mark (/20)</th>
+                        <th style="width:12%">Weighted</th>
+                        <th style="width:28%">Teacher Remark</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for mark in marks %}
                         <tr>
-                            <td class="fw-bold">{{ mark.subject.name }}<br><small class="text-muted fw-normal">{{ mark.teacher.user.get_full_name|default:"" }}</small></td>
-                            <td class="text-center">{{ mark.subject.coefficient }}</td>
-                            <td class="text-center fw-bold">
-                                {% if mark.value is None %}AB{% else %}{{ mark.value }}{% endif %}
+                            <td>
+                                <span class="fw-bold">{{ mark.subject.name }}</span>
+                                {% if mark.teacher %}<br><small class="text-muted">{{ mark.teacher.user.get_full_name }}</small>{% endif %}
                             </td>
-                            <td class="text-center">
-                                <!-- Approximation for display -->
-                                {% if mark.value is not None %}
-                                    {% widthratio mark.value 1 mark.subject.coefficient %}
+                            <td class="text-center">{{ mark.subject.coefficient }}</td>
+                            <td class="text-center fw-bold {% if mark.value is not None and mark.value < 10 %}text-danger{% endif %}">
+                                {% if mark.value is None %}
+                                    <span class="badge bg-secondary">AB</span>
                                 {% else %}
-                                    0
+                                    {{ mark.value }}
                                 {% endif %}
                             </td>
-                            <td>{{ mark.remark }}</td>
+                            <td class="text-center">
+                                {% if mark.value is not None %}{{ mark.weighted }}{% else %}0{% endif %}
+                            </td>
+                            <td class="text-muted small">{{ mark.remark }}</td>
                         </tr>
                     {% empty %}
                         <tr>
-                            <td colspan="5" class="text-center py-3">No subjects found for this sequence.</td>
+                            <td colspan="5" class="text-center py-3 text-muted">No subjects recorded for this sequence.</td>
                         </tr>
                     {% endfor %}
                 </tbody>
-                <tfoot class="table-light fw-bold text-center border-dark">
+                <tfoot class="table-light fw-bold">
                     <tr>
-                        <td class="text-end text-uppercase">Total</td>
-                        <td>{{ total_coeff }}</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td class="text-end text-uppercase">Total Coefficients</td>
+                        <td class="text-center">{{ total_coeff }}</td>
+                        <td></td><td></td><td></td>
                     </tr>
                 </tfoot>
             </table>
 
-            <!-- Summary & Signatures -->
-            <div class="row mt-5">
+            <!-- Summary & Signature -->
+            <div class="row mt-4">
                 <div class="col-md-6">
-                    <div class="border border-dark p-3 bg-light">
+                    <div class="border border-dark p-3 rounded {% if is_pass %}bg-success bg-opacity-10{% else %}bg-danger bg-opacity-10{% endif %}">
                         <table class="table table-sm table-borderless mb-0">
                             <tr>
                                 <th class="fs-5">Sequence Average:</th>
-                                <td class="fs-5 fw-bold">{{ average|default:"N/A" }} / 20</td>
+                                <td class="fs-5 fw-bold">
+                                    {% if average %}{{ average|floatformat:2 }} / 20{% else %}N/A{% endif %}
+                                </td>
                             </tr>
                             <tr>
                                 <th>Class Rank:</th>
-                                <td class="fw-bold">{{ rank|default:"N/A" }}</td>
+                                <td class="fw-bold">
+                                    {% if rank %}{{ rank }}{% else %}N/A{% endif %}
+                                </td>
                             </tr>
                             <tr>
                                 <th>Status:</th>
                                 <td class="fw-bold {% if is_pass %}text-success{% else %}text-danger{% endif %}">
-                                    {% if is_pass %}PROMOTED / PASSED{% else %}FAILED{% endif %}
+                                    {% if average is None %}
+                                        N/A
+                                    {% elif is_pass %}
+                                        <i class="ti ti-circle-check"></i> PASSED
+                                    {% else %}
+                                        <i class="ti ti-circle-x"></i> FAILED
+                                    {% endif %}
                                 </td>
                             </tr>
                         </table>
@@ -130,8 +143,8 @@
                 <div class="col-md-6 text-end d-flex flex-column justify-content-end">
                     <div class="mt-4">
                         <p class="mb-5 fw-bold text-uppercase">The Principal</p>
-                        <hr style="width: 200px; border-color: #000; margin-left: auto;" class="mb-1">
-                        <p class="text-muted small">Signature & Stamp</p>
+                        <hr style="width:200px; border-color:#000; margin-left:auto;" class="mb-1">
+                        <p class="text-muted small">Signature &amp; Stamp</p>
                     </div>
                 </div>
             </div>

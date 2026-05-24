@@ -1,24 +1,47 @@
 {% extends 'base.html' %}
 
 {% block title %}Student Dashboard - EduResults CM{% endblock %}
+{% block nav_s_dashboard %}active{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col">
-            <h2>Welcome, {{ request.user.first_name }}</h2>
-            <p class="text-muted">Access your academic records and official results.</p>
+            <h2>Student Dashboard</h2>
+            <p class="text-muted">Welcome back, {{ request.user.get_full_name|default:request.user.username }}</p>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-4 mb-4">
-            <div class="card shadow h-100 border-top border-primary border-4">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card shadow h-100 border-0 border-top border-primary border-4">
                 <div class="card-body text-center d-flex flex-column">
-                    <div class="display-4 text-primary mb-3"><i class="ti ti-chart-bar"></i></div>
-                    <h5 class="card-title">View Results</h5>
-                    <p class="card-text text-muted flex-grow-1">Check your published marks, sequence averages, and class rankings.</p>
-                    <a href="{% url 'marks:student_results' %}" class="btn btn-primary mt-3">My Results</a>
+                    <div class="display-5 text-primary mb-3"><i class="ti ti-table"></i></div>
+                    <h5 class="card-title">My Results</h5>
+                    <p class="card-text text-muted flex-grow-1">View your published marks, weighted totals, and class rank for any sequence.</p>
+                    <a href="{% url 'marks:student_results' %}" class="btn btn-primary mt-3">View My Results</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow h-100 border-0 border-top border-info border-4">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="display-5 text-info mb-3"><i class="ti ti-chart-line"></i></div>
+                    <h5 class="card-title">Performance Analytics</h5>
+                    <p class="card-text text-muted flex-grow-1">Track your academic progress across all sequences with interactive charts.</p>
+                    <a href="{% url 'marks:student_analytics' %}" class="btn btn-outline-info mt-3">View Analytics</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow h-100 border-0 border-top border-secondary border-4">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="display-5 text-secondary mb-3"><i class="ti ti-file-certificate"></i></div>
+                    <h5 class="card-title">Report Cards</h5>
+                    <p class="card-text text-muted flex-grow-1">View and print your official sequence report cards online.</p>
+                    <a href="{% url 'marks:student_results' %}" class="btn btn-outline-secondary mt-3">Go to Results</a>
                 </div>
             </div>
         </div>

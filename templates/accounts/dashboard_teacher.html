@@ -1,24 +1,36 @@
 {% extends 'base.html' %}
 
 {% block title %}Teacher Dashboard - EduResults CM{% endblock %}
+{% block nav_t_dashboard %}active{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col">
-            <h2>Welcome, Teacher</h2>
-            <p class="text-muted">Manage marks and assessments for your assigned classes.</p>
+            <h2>Teacher Dashboard</h2>
+            <p class="text-muted">Welcome back, {{ request.user.get_full_name|default:request.user.username }}</p>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-4 mb-4">
-            <div class="card shadow h-100 border-top border-primary border-4">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card shadow h-100 border-0 border-top border-primary border-4">
                 <div class="card-body text-center d-flex flex-column">
-                    <div class="display-4 text-primary mb-3"><i class="ti ti-edit"></i></div>
+                    <div class="display-5 text-primary mb-3"><i class="ti ti-edit"></i></div>
                     <h5 class="card-title">Enter Marks</h5>
                     <p class="card-text text-muted flex-grow-1">Record sequence marks for the classes and subjects you are assigned to teach.</p>
                     <a href="{% url 'marks:select_assignment' %}" class="btn btn-primary mt-3">Go to Mark Sheet</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow h-100 border-0 border-top border-success border-4">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="display-5 text-success mb-3"><i class="ti ti-chart-bar"></i></div>
+                    <h5 class="card-title">Class Summary</h5>
+                    <p class="card-text text-muted flex-grow-1">View subject performance statistics — averages, highest/lowest marks, and pass rates for your classes.</p>
+                    <a href="{% url 'marks:class_summary' %}" class="btn btn-outline-success mt-3">View Class Summary</a>
                 </div>
             </div>
         </div>

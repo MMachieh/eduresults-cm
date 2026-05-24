@@ -14,6 +14,12 @@ class Mark(models.Model):
     remark   = models.CharField(max_length=200, blank=True)
     entered_at = models.DateTimeField(auto_now=True)
 
+    @property
+    def weighted(self):
+        if self.value is None:
+            return None
+        return round(self.value * self.subject.coefficient, 2)
+
     def is_absent(self):
         return self.value is None
 

@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block title %}My Analytics - EduResults CM{% endblock %}
+{% block nav_s_analytics %}active{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h2>Performance Analytics</h2>
+            <p class="text-muted">{{ student.user.get_full_name }} &bull; {{ student.matricule }}</p>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'marks:student_results' %}" class="btn btn-outline-secondary">
+                <i class="ti ti-arrow-left"></i> Back to Results
+            </a>
+        </div>
+    </div>
+
+    {% if trend_list %}
+        <!-- Summary Cards -->
+        <div class="row g-3 mb-4">
+            {% with trend_list|last as latest %}
+            <div class="col-md-4">
+                <div class="card border-0 shadow text-white h-100" style="background:linear-gradient(135deg,#0C447C,#1a73e8);">
+                    <div class="card-body text-center d-flex flex-column justify-content-center py-4">
+                        <div class="text-white-50 small text-uppercase mb-1">Latest Average</div>
+                        <div class="fw-bold mb-0" style="font-size:3rem;">{{ latest.average|floatformat:2 }}</div>
+                        <div class="text-white-50">out of 20 &bull; {{ latest.label }}</div>
+                        {% if latest.average >= 10 %}
+                            <span class="badge bg-success mt-2 fs-6">PASSED</span>
+                        {% else %}
+                            <span class="badge bg-danger mt-2 fs-6">FAILED</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow bg-info text-white h-100">
+                    <div class="card-body text-center d-flex flex-column justify-content-center py-4">
+                        <div class="text-white-50 small text-uppercase mb-1">Latest Rank</div>
+                        <div class="fw-bold mb-0" style="font-size:3rem;">{{ latest.rank|default:"—" }}</div>
+                        {% if latest.total %}<div class="text-white-50">out of {{ latest.total }} students</div>{% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endwith %}
+            <div class="col-md-4">
+                <div class="card border-0 shadow h-100">
+                    <div class="card-body text-center d-flex flex-column justify-content-center py-4">
+                        <div class="text-muted small text-uppercase mb-1">Sequences Completed</div>
+                        <div class="fw-bold" style="font-size:3rem;">{{ trend_list|length }}</div>
+                        <div class="text-muted small">published results</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trend Chart -->
+        <div class="card shadow mb-4">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="ti ti-chart-line"></i> Average Across Sequences</h5>
+            </div>
+            <div class="card-body">
+                <div style="position:relative; height:300px;">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trend Table -->
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="ti ti-table"></i> Sequence History</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Sequence</th>
+                                <th class="text-center">Average (/20)</th>
+                                <th class="text-center">Class Rank</th>
+                                <th class="text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in trend_list %}
+                            <tr>
+                                <td class="fw-bold">{{ entry.label }}</td>
+                                <td class="text-center fw-bold {% if entry.average >= 10 %}text-success{% else %}text-danger{% endif %}">
+                                    {{ entry.average|floatformat:2 }}
+                                </td>
+                                <td class="text-center">
+                                    {% if entry.rank %}{{ entry.rank }}{% if entry.total %} / {{ entry.total }}{% endif %}{% else %}—{% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if entry.average >= 10 %}
+                                        <span class="badge bg-success">Passed</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Failed</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="ti ti-chart-off text-muted" style="font-size:4rem;"></i>
+                <h5 class="mt-3 text-muted">No published results yet</h5>
+                <p class="text-muted">Analytics will appear once sequence results have been published by your administrator.</p>
+                <a href="{% url 'marks:student_results' %}" class="btn btn-primary mt-2">Check Results</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if trend_list %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const trendData = {{ trend_data|safe }};
+
+new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+        labels: trendData.map(d => d.label),
+        datasets: [{
+            label: 'Average (/20)',
+            data: trendData.map(d => d.average),
+            borderColor: '#0C447C',
+            backgroundColor: 'rgba(12,68,124,0.1)',
+            pointBackgroundColor: trendData.map(d => d.average >= 10 ? '#198754' : '#dc3545'),
+            pointRadius: 6,
+            pointHoverRadius: 8,
+            fill: true,
+            tension: 0.3,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: ctx => ` Average: ${ctx.parsed.y} / 20`
+                }
+            }
+        },
+        scales: {
+            y: {
+                min: 0,
+                max: 20,
+                grid: { color: 'rgba(0,0,0,0.05)' },
+                ticks: { callback: v => v + '/20' }
+            },
+            x: { grid: { display: false } }
+        }
+    }
+});
+</script>
+{% endif %}
+{% endblock %}

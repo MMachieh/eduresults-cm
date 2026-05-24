@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}Class Summary - EduResults CM{% endblock %}
+{% block nav_t_summary %}active{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h2>Class Summary</h2>
+            <p class="text-muted">View subject performance statistics for your assigned classes.</p>
+        </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label fw-bold">Select Assignment (Class / Subject)</label>
+                    <select name="assignment" class="form-select" required>
+                        <option value="" disabled {% if not selected_assignment %}selected{% endif %}>Choose class & subject...</option>
+                        {% for a in assignments %}
+                            <option value="{{ a.id }}" {% if selected_assignment.id == a.id %}selected{% endif %}>
+                                {{ a.class_group }} — {{ a.subject.name }} ({{ a.academic_year }})
+                            </option>
+                        {% empty %}
+                            <option disabled>No assignments found.</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label fw-bold">Select Sequence</label>
+                    <select name="sequence" class="form-select" required>
+                        <option value="" disabled {% if not selected_sequence %}selected{% endif %}>Choose sequence...</option>
+                        {% for seq in sequences %}
+                            <option value="{{ seq.id }}" {% if selected_sequence.id == seq.id %}selected{% endif %}>
+                                {{ seq }} {% if seq.is_published %}(published){% else %}(draft){% endif %}
+                            </option>
+                        {% empty %}
+                            <option disabled>No sequences found.</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="ti ti-search"></i> View
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if subject_stats %}
+        <!-- Stats Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-2">
+                <div class="card border-0 shadow-sm text-center py-3 h-100">
+                    <div class="text-muted small text-uppercase mb-1">Class Avg</div>
+                    <div class="fw-bold fs-3 {% if subject_stats.average >= 10 %}text-success{% else %}text-danger{% endif %}">
+                        {{ subject_stats.average }}
+                    </div>
+                    <div class="text-muted small">/20</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-2">
+                <div class="card border-0 shadow-sm text-center py-3 h-100">
+                    <div class="text-muted small text-uppercase mb-1">Highest</div>
+                    <div class="fw-bold fs-3 text-success">{{ subject_stats.highest }}</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-2">
+                <div class="card border-0 shadow-sm text-center py-3 h-100">
+                    <div class="text-muted small text-uppercase mb-1">Lowest</div>
+                    <div class="fw-bold fs-3 text-danger">{{ subject_stats.lowest }}</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-2">
+                <div class="card border-0 shadow-sm text-center py-3 h-100 bg-success bg-opacity-10">
+                    <div class="text-muted small text-uppercase mb-1">Passed</div>
+                    <div class="fw-bold fs-3 text-success">{{ subject_stats.passed }}</div>
+                    <div class="text-muted small">of {{ subject_stats.total }}</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-2">
+                <div class="card border-0 shadow-sm text-center py-3 h-100 bg-danger bg-opacity-10">
+                    <div class="text-muted small text-uppercase mb-1">Failed</div>
+                    <div class="fw-bold fs-3 text-danger">{{ subject_stats.failed }}</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-2">
+                <div class="card border-0 shadow-sm text-center py-3 h-100">
+                    <div class="text-muted small text-uppercase mb-1">Absent</div>
+                    <div class="fw-bold fs-3 text-secondary">{{ subject_stats.absent }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Marks Table -->
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="ti ti-table"></i>
+                    {{ selected_assignment.subject.name }} — {{ selected_assignment.class_group }} — {{ selected_sequence }}
+                </h5>
+                <span class="badge bg-secondary">{{ student_data|length }} students</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width:50px;">#</th>
+                                <th>Student Name</th>
+                                <th>Matricule</th>
+                                <th class="text-center">Mark (/20)</th>
+                                <th class="text-center">Status</th>
+                                <th>Remark</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in student_data %}
+                            <tr>
+                                <td class="text-muted">{{ forloop.counter }}</td>
+                                <td class="fw-bold">{{ entry.student.user.get_full_name }}</td>
+                                <td class="text-muted">{{ entry.student.matricule }}</td>
+                                <td class="text-center">
+                                    {% if entry.value is None %}
+                                        <span class="badge bg-secondary">AB</span>
+                                    {% elif entry.value < 10 %}
+                                        <span class="text-danger fw-bold">{{ entry.value }}</span>
+                                    {% else %}
+                                        <span class="text-success fw-bold">{{ entry.value }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if entry.value is None %}
+                                        <span class="badge bg-secondary">Absent</span>
+                                    {% elif entry.value >= 10 %}
+                                        <span class="badge bg-success">Passed</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Failed</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-muted small">{{ entry.remark }}</td>
+                            </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-4 text-muted">No marks recorded yet for this selection.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    {% elif selected_assignment and selected_sequence %}
+        <div class="alert alert-info">
+            <i class="ti ti-info-circle"></i> No marks found for this selection. Make sure marks have been entered.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -15,98 +15,42 @@
                 height: 1cm;
             }
         }
-        body {
-            font-family: Helvetica, Arial, sans-serif;
-            font-size: 11px;
-            color: #000;
-        }
-        h1, h2, h3, h4, h5, p {
-            margin: 0;
-            padding: 0;
-        }
-        .header {
-            text-align: center;
-            border-bottom: 2px solid #000;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        .header h1 {
-            color: #0C447C;
-            font-size: 24px;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-        .header h4 {
-            font-size: 14px;
-            color: #555;
-            text-transform: uppercase;
-        }
-        .header-title {
-            background-color: #eee;
-            border: 1px solid #333;
-            display: inline-block;
-            padding: 5px 15px;
-            margin-top: 10px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-        .info-table {
-            width: 100%;
-            margin-bottom: 20px;
-        }
-        .info-table td {
-            padding: 3px;
-        }
-        .marks-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 30px;
-        }
-        .marks-table th, .marks-table td {
-            border: 1px solid #000;
-            padding: 5px 4px;
-            font-size: 9px;
-            vertical-align: middle;
-        }
-        .marks-table th {
-            background-color: #f0f0f0;
-            text-align: center;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        .subject-col { width: 35%; text-align: left; }
-        .coeff-col { width: 6%; text-align: center; }
-        .mark-col { width: 8%; text-align: center; }
-        .total-col { width: 8%; text-align: center; }
-        .remark-col { width: 20%; text-align: left; }
+        body { font-family: Helvetica, Arial, sans-serif; font-size: 11px; color: #000; }
+        h1, h2, h3, h4, h5, p { margin: 0; padding: 0; }
+
+        .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+        .header h1 { color: #0C447C; font-size: 24px; margin-bottom: 5px; text-transform: uppercase; }
+        .header h4 { font-size: 14px; color: #555; text-transform: uppercase; }
+        .header-title { background-color: #eee; border: 1px solid #333; display: inline-block; padding: 5px 15px; margin-top: 10px; font-size: 14px; font-weight: bold; }
+
+        .info-table { width: 100%; margin-bottom: 20px; }
+        .info-table td { padding: 3px; }
+
+        .marks-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        .marks-table th, .marks-table td { border: 1px solid #000; padding: 5px 4px; font-size: 9px; vertical-align: middle; }
+        .marks-table th { background-color: #333; color: #fff; text-align: center; font-weight: bold; text-transform: uppercase; }
+        .marks-table tfoot td { background-color: #f0f0f0; font-weight: bold; }
+
+        .subject-col { width: 33%; text-align: left; }
+        .coeff-col   { width: 6%;  text-align: center; }
+        .mark-col    { width: 9%;  text-align: center; }
+        .total-col   { width: 9%;  text-align: center; }
+        .remark-col  { width: 20%; text-align: left; }
+
         .text-center { text-align: center; }
-        .text-right { text-align: right; }
-        .fw-bold { font-weight: bold; }
-        
-        .summary-box {
-            border: 1px solid #000;
-            background-color: #f9f9f9;
-            padding: 10px;
-            width: 50%;
-        }
-        .summary-table {
-            width: 100%;
-        }
-        .summary-table th { text-align: left; padding: 5px 0; }
-        .summary-table td { text-align: right; font-weight: bold; }
-        
-        .signature-box {
-            text-align: right;
-            margin-top: 80px;
-            padding-top: 20px;
-        }
-        .signature-line {
-            border-top: 1px solid #000;
-            width: 200px;
-            margin-left: auto;
-            margin-top: 80px;
-            margin-bottom: 5px;
-        }
+        .text-right  { text-align: right; }
+        .fw-bold     { font-weight: bold; }
+        .fail-mark   { color: #c00; }
+
+        .summary-box { border: 2px solid #000; background-color: #f9f9f9; padding: 12px; width: 48%; }
+        .summary-table { width: 100%; }
+        .summary-table th { text-align: left; padding: 4px 0; font-size: 10px; }
+        .summary-table td { text-align: right; font-weight: bold; font-size: 10px; }
+        .pass-text   { color: #006600; }
+        .fail-text   { color: #cc0000; }
+
+        .signature-box { text-align: right; padding-top: 20px; }
+        .signature-line { border-top: 1px solid #000; width: 200px; margin-left: auto; margin-top: 80px; margin-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -115,24 +59,24 @@
         <h1>EduResults CM</h1>
         <h4>Republic of Cameroon</h4>
         <div class="header-title">OFFICIAL SEQUENCE REPORT CARD</div>
-        <p style="margin-top: 10px; font-weight: bold;">
-            Academic Year: {{ sequence.term.academic_year.label }} &nbsp;|&nbsp; 
-            Term: {{ sequence.term.name }} &nbsp;|&nbsp; 
+        <p style="margin-top:10px; font-weight:bold;">
+            Academic Year: {{ sequence.term.academic_year.label }} &nbsp;|&nbsp;
+            Term: {{ sequence.term.name }} &nbsp;|&nbsp;
             Sequence: {{ sequence.name }}
         </p>
     </div>
 
     <table class="info-table">
         <tr>
-            <td style="width: 100px;"><strong>Name:</strong></td>
-            <td class="fw-bold" style="font-size: 14px;">{{ student.user.get_full_name|upper }}</td>
+            <td style="width:100px;"><strong>Name:</strong></td>
+            <td class="fw-bold" style="font-size:14px;">{{ student.user.get_full_name|upper }}</td>
             <td class="text-right"><strong>Class:</strong></td>
             <td class="text-right fw-bold">{{ class_group|default:"N/A" }}</td>
         </tr>
         <tr>
             <td><strong>Matricule:</strong></td>
             <td>{{ student.matricule }}</td>
-            <td class="text-right"><strong>DOB:</strong></td>
+            <td class="text-right"><strong>Date of Birth:</strong></td>
             <td class="text-right">{{ student.date_of_birth|default:"N/A" }}</td>
         </tr>
     </table>
@@ -143,7 +87,7 @@
                 <th class="subject-col">Subject</th>
                 <th class="coeff-col">Coeff</th>
                 <th class="mark-col">Mark (/20)</th>
-                <th class="total-col">Total</th>
+                <th class="total-col">Weighted</th>
                 <th class="remark-col">Teacher Remark</th>
             </tr>
         </thead>
@@ -151,19 +95,15 @@
             {% for mark in marks %}
                 <tr>
                     <td class="subject-col">
-                        <strong>{{ mark.subject.name }}</strong><br>
-                        <span style="color: #666; font-size: 8px;">{{ mark.teacher.user.get_full_name|default:"" }}</span>
+                        <strong>{{ mark.subject.name }}</strong>
+                        {% if mark.teacher %}<br><span style="color:#666; font-size:8px;">{{ mark.teacher.user.get_full_name }}</span>{% endif %}
                     </td>
                     <td class="coeff-col">{{ mark.subject.coefficient }}</td>
-                    <td class="mark-col fw-bold">
+                    <td class="mark-col fw-bold {% if mark.value is not None and mark.value < 10 %}fail-mark{% endif %}">
                         {% if mark.value is None %}AB{% else %}{{ mark.value }}{% endif %}
                     </td>
                     <td class="total-col">
-                        {% if mark.value is not None %}
-                            {% widthratio mark.value 1 mark.subject.coefficient %}
-                        {% else %}
-                            0
-                        {% endif %}
+                        {% if mark.value is not None %}{{ mark.weighted }}{% else %}0{% endif %}
                     </td>
                     <td class="remark-col">{{ mark.remark }}</td>
                 </tr>
@@ -171,7 +111,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td class="subject-col text-right fw-bold">TOTAL</td>
+                <td class="subject-col text-right fw-bold">TOTAL COEFFICIENTS</td>
                 <td class="coeff-col fw-bold">{{ total_coeff }}</td>
                 <td class="mark-col"></td>
                 <td class="total-col"></td>
@@ -184,16 +124,16 @@
         <table class="summary-table">
             <tr>
                 <th>Sequence Average:</th>
-                <td style="font-size: 14px;">{{ average|default:"N/A" }} / 20</td>
+                <td style="font-size:14px;">{% if average %}{{ average|floatformat:2 }} / 20{% else %}N/A{% endif %}</td>
             </tr>
             <tr>
                 <th>Class Rank:</th>
-                <td>{{ rank|default:"N/A" }}</td>
+                <td>{% if rank %}{{ rank }}{% else %}N/A{% endif %}</td>
             </tr>
             <tr>
                 <th>Status:</th>
-                <td style="color: {% if is_pass %}green{% else %}red{% endif %};">
-                    {% if is_pass %}PROMOTED / PASSED{% else %}FAILED{% endif %}
+                <td class="{% if is_pass %}pass-text{% else %}fail-text{% endif %}">
+                    {% if average is None %}N/A{% elif is_pass %}PASSED{% else %}FAILED{% endif %}
                 </td>
             </tr>
         </table>
@@ -202,11 +142,11 @@
     <div class="signature-box">
         <strong>THE PRINCIPAL</strong>
         <div class="signature-line"></div>
-        <span style="font-size: 9px; color: #666;">Signature & Stamp</span>
+        <span style="font-size:9px; color:#666;">Signature &amp; Stamp</span>
     </div>
 
-    <div id="footerContent" style="text-align: center; font-size: 9px; color: #999;">
-        Generated securely by EduResults CM | Page <pdf:pagenumber> of <pdf:pagecount>
+    <div id="footerContent" style="text-align:center; font-size:9px; color:#999;">
+        Generated by EduResults CM &mdash; Page <pdf:pagenumber> of <pdf:pagecount>
     </div>
 
 </body>

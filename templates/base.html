@@ -60,7 +60,10 @@
 
       <div class="nav-section">Results</div>
       <a href="{% url 'school:publish_sequence' %}" class="nav-item {% block nav_marks %}{% endblock %}">
-        <i class="ti ti-chart-bar"></i> Marks & Results
+        <i class="ti ti-broadcast"></i> Publish Results
+      </a>
+      <a href="{% url 'reports:analytics' %}" class="nav-item {% block nav_analytics %}{% endblock %}">
+        <i class="ti ti-chart-bar"></i> Analytics
       </a>
       <a href="{% url 'reports:admin_hub' %}" class="nav-item {% block nav_reports %}{% endblock %}">
         <i class="ti ti-file-download"></i> Report Cards
@@ -74,7 +77,7 @@
       <a href="{% url 'marks:select_assignment' %}" class="nav-item {% block nav_t_marks %}{% endblock %}">
         <i class="ti ti-pencil"></i> Enter Marks
       </a>
-      <a href="{% url 'marks:select_assignment' %}" class="nav-item {% block nav_t_summary %}{% endblock %}">
+      <a href="{% url 'marks:class_summary' %}" class="nav-item {% block nav_t_summary %}{% endblock %}">
         <i class="ti ti-chart-bar"></i> Class Summary
       </a>
 
@@ -86,8 +89,8 @@
       <a href="{% url 'marks:student_results' %}" class="nav-item {% block nav_s_results %}{% endblock %}">
         <i class="ti ti-chart-bar"></i> My Results
       </a>
-      <a href="{% url 'marks:student_results' %}" class="nav-item {% block nav_s_history %}{% endblock %}">
-        <i class="ti ti-history"></i> Academic History
+      <a href="{% url 'marks:student_analytics' %}" class="nav-item {% block nav_s_analytics %}{% endblock %}">
+        <i class="ti ti-chart-line"></i> Analytics
       </a>
 
       {% elif user.is_parent %}

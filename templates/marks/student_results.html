@@ -1,24 +1,30 @@
 {% extends 'base.html' %}
 
 {% block title %}My Results - EduResults CM{% endblock %}
+{% block nav_s_results %}active{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <div class="row mb-4">
+    <div class="row mb-4 align-items-center">
         <div class="col">
             <h2>My Results</h2>
-            <p class="text-muted">{{ student.user.get_full_name }} ({{ student.matricule }})</p>
+            <p class="text-muted">{{ student.user.get_full_name }} &bull; {{ student.matricule }}</p>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'marks:student_analytics' %}" class="btn btn-outline-info">
+                <i class="ti ti-chart-line"></i> Performance Analytics
+            </a>
         </div>
     </div>
 
     <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card shadow">
+        <div class="col-md-7">
+            <div class="card shadow-sm">
                 <div class="card-body">
-                    <form method="get" class="d-flex align-items-end">
-                        <div class="flex-grow-1 me-2">
+                    <form method="get" class="d-flex align-items-end gap-2">
+                        <div class="flex-grow-1">
                             <label for="sequence" class="form-label fw-bold">Select Published Sequence</label>
-                            <select name="sequence" id="sequence" class="form-select" required>
+                            <select name="sequence" id="sequence" class="form-select">
                                 <option value="" selected disabled>Choose sequence...</option>
                                 {% for seq in sequences %}
                                     <option value="{{ seq.id }}" {% if selected_sequence.id == seq.id %}selected{% endif %}>
@@ -37,46 +43,65 @@
     </div>
 
     {% if selected_sequence and results %}
-        <div class="row mb-4">
+        <!-- Summary Cards -->
+        <div class="row mb-4 g-3">
             <div class="col-md-4">
-                <div class="card bg-primary text-white shadow h-100">
-                    <div class="card-body text-center d-flex flex-column justify-content-center">
-                        <h5 class="card-title">Sequence Average</h5>
-                        <h2 class="display-4 fw-bold mb-0">{{ average|default:"N/A" }}<span class="fs-4">/20</span></h2>
-                        {% if average >= 10 %}
-                            <span class="badge bg-success mt-2 fs-6">PASSED</span>
-                        {% else %}
-                            <span class="badge bg-danger mt-2 fs-6">FAILED</span>
+                <div class="card shadow h-100 border-0" style="background: linear-gradient(135deg,#0C447C,#1a73e8); color:#fff;">
+                    <div class="card-body text-center d-flex flex-column justify-content-center py-4">
+                        <div class="small text-white-50 text-uppercase mb-1">Sequence Average</div>
+                        <h1 class="fw-bold mb-1" style="font-size:3rem;">
+                            {% if average %}{{ average|floatformat:2 }}{% else %}N/A{% endif %}
+                        </h1>
+                        <div class="text-white-50">out of 20</div>
+                        {% if average %}
+                            {% if average >= 10 %}
+                                <span class="badge bg-success mt-2 fs-6"><i class="ti ti-check"></i> PASSED</span>
+                            {% else %}
+                                <span class="badge bg-danger mt-2 fs-6"><i class="ti ti-x"></i> FAILED</span>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card bg-info text-white shadow h-100">
-                    <div class="card-body text-center d-flex flex-column justify-content-center">
-                        <h5 class="card-title">Class Rank</h5>
-                        <h2 class="display-4 fw-bold mb-0">{{ rank|default:"N/A" }}</h2>
+                <div class="card shadow h-100 border-0 bg-info text-white">
+                    <div class="card-body text-center d-flex flex-column justify-content-center py-4">
+                        <div class="small text-white-50 text-uppercase mb-1">Class Rank</div>
+                        <h1 class="fw-bold mb-1" style="font-size:3rem;">{{ rank|default:"—" }}</h1>
+                        {% if total_in_class %}
+                            <div class="text-white-50">out of {{ total_in_class }} students</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow h-100 border-0 bg-secondary text-white">
+                    <div class="card-body text-center d-flex flex-column justify-content-center py-4">
+                        <div class="small text-white-50 text-uppercase mb-1">Sequence</div>
+                        <h4 class="fw-bold mb-1">{{ selected_sequence }}</h4>
+                        <div class="text-white-50">{{ selected_sequence.term.academic_year.label }}</div>
+                        <a href="{% url 'reports:online_report_card_self' selected_sequence.id %}" class="btn btn-sm btn-light mt-3">
+                            <i class="ti ti-file-certificate"></i> Report Card
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Marks Table -->
         <div class="card shadow">
-            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Detailed Marks - {{ selected_sequence }}</h5>
-                <a href="{% url 'reports:online_report_card_self' selected_sequence.id %}" class="btn btn-sm btn-outline-light">
-                    <i class="ti ti-file-certificate"></i> View Official Report Card
-                </a>
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="ti ti-table"></i> Detailed Marks — {{ selected_sequence }}</h5>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover mb-0">
-                        <thead class="table-light">
+                    <table class="table table-striped table-hover mb-0 align-middle">
+                        <thead class="table-dark">
                             <tr>
                                 <th>Subject</th>
-                                <th>Coefficient</th>
-                                <th>Mark (/20)</th>
-                                <th>Weighted</th>
+                                <th class="text-center">Coeff</th>
+                                <th class="text-center">Mark (/20)</th>
+                                <th class="text-center">Weighted</th>
                                 <th>Remark</th>
                             </tr>
                         </thead>
@@ -84,28 +109,24 @@
                             {% for mark in results %}
                                 <tr>
                                     <td class="fw-bold">{{ mark.subject.name }}</td>
-                                    <td>{{ mark.subject.coefficient }}</td>
-                                    <td>
+                                    <td class="text-center">{{ mark.subject.coefficient }}</td>
+                                    <td class="text-center">
                                         {% if mark.value is None %}
                                             <span class="badge bg-secondary">AB</span>
+                                        {% elif mark.value < 10 %}
+                                            <span class="text-danger fw-bold">{{ mark.value }}</span>
                                         {% else %}
-                                            {{ mark.value }}
+                                            <span class="text-success fw-bold">{{ mark.value }}</span>
                                         {% endif %}
                                     </td>
-                                    <td>
-                                        {% if mark.value is not None %}
-                                            {% widthratio mark.value 1 mark.subject.coefficient as weighted %}
-                                            {{ mark.value|add:"0" }} <!-- Using python to multiply in template is hard, wait, we can just use a simple visual but the average is already computed anyway -->
-                                            <!-- Since we don't have a template tag for multiply, let's just display the mark and average -->
-                                        {% else %}
-                                            0
-                                        {% endif %}
+                                    <td class="text-center text-muted">
+                                        {% if mark.value is not None %}{{ mark.weighted }}{% else %}0{% endif %}
                                     </td>
-                                    <td class="text-muted">{{ mark.remark }}</td>
+                                    <td class="text-muted small">{{ mark.remark }}</td>
                                 </tr>
                             {% empty %}
                                 <tr>
-                                    <td colspan="5" class="text-center py-4">No marks recorded.</td>
+                                    <td colspan="5" class="text-center py-4 text-muted">No marks recorded for this sequence.</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -113,6 +134,7 @@
                 </div>
             </div>
         </div>
+
     {% elif selected_sequence %}
         <div class="alert alert-info">
             <i class="ti ti-info-circle"></i> No results found for the selected sequence.

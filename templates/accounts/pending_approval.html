@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Registration Pending - EduResults CM{% endblock %}
+
+{% block auth_content %}
+<div class="min-vh-100 d-flex align-items-center justify-content-center" style="background:linear-gradient(135deg,#0C447C 0%,#1a73e8 100%);">
+    <div class="card shadow-lg" style="max-width:520px; width:100%;">
+        <div class="card-body text-center p-5">
+            <div class="mb-4">
+                <div class="rounded-circle bg-warning bg-opacity-10 d-inline-flex align-items-center justify-content-center" style="width:80px;height:80px;">
+                    <i class="ti ti-clock text-warning" style="font-size:2.5rem;"></i>
+                </div>
+            </div>
+            <h3 class="fw-bold mb-2">Registration Submitted!</h3>
+            <p class="text-muted mb-4">
+                Your parent account registration has been submitted successfully and is now pending review by a school administrator.
+            </p>
+            <div class="alert alert-info text-start">
+                <i class="ti ti-info-circle me-2"></i>
+                <strong>What happens next?</strong><br>
+                An administrator will review your request and verify your relationship to the student. Once approved, you will be able to log in using the credentials you created.
+            </div>
+            <p class="text-muted small mb-4">
+                If you have questions, please contact the school administration directly.
+            </p>
+            <a href="{% url 'accounts:login' %}" class="btn btn-primary">
+                <i class="ti ti-login"></i> Go to Login
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,49 +1,171 @@
 {% extends 'base.html' %}
 
 {% block title %}Admin Dashboard - EduResults CM{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <div class="row mb-4">
+
+    <div class="row mb-4 align-items-center">
         <div class="col">
-            <h2>Welcome, Administrator</h2>
-            <p class="text-muted">Manage the entire school system from here.</p>
+            <h2>Admin Dashboard</h2>
+            <p class="text-muted">Welcome back, {{ request.user.get_full_name|default:request.user.username }}</p>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-4 mb-4">
-            <div class="card shadow h-100 border-top border-primary border-4">
+    <!-- Pending Parent Approvals Alert -->
+    {% if pending_parents %}
+    <div class="alert alert-warning border-start border-warning border-4 d-flex align-items-start mb-4" role="alert">
+        <i class="ti ti-alert-triangle fs-4 me-3 flex-shrink-0 text-warning"></i>
+        <div class="flex-grow-1">
+            <strong>{{ pending_parents|length }} parent registration{{ pending_parents|length|pluralize }} awaiting approval</strong>
+            <div class="mt-2">
+                {% for parent_user in pending_parents %}
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge bg-secondary">{{ parent_user.get_full_name|default:parent_user.username }}</span>
+                    <small class="text-muted">
+                        linked to:
+                        {% for student in parent_user.parent_profile.students.all %}
+                            {{ student.user.get_full_name }} ({{ student.matricule }}){% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </small>
+                    <form method="post" action="{% url 'accounts:approve_parent' parent_user.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-success py-0">
+                            <i class="ti ti-check"></i> Approve
+                        </button>
+                    </form>
+                    <form method="post" action="{% url 'accounts:reject_parent' parent_user.id %}" class="d-inline"
+                          onsubmit="return confirm('Reject and delete this registration?')">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger py-0">
+                            <i class="ti ti-x"></i> Reject
+                        </button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Stats Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm h-100" style="border-left:4px solid #0C447C !important;">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center flex-shrink-0" style="width:50px;height:50px;">
+                        <i class="ti ti-users text-primary fs-4"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Total Students</div>
+                        <div class="fw-bold fs-4">{{ total_students }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="rounded-circle bg-success bg-opacity-10 d-flex align-items-center justify-content-center flex-shrink-0" style="width:50px;height:50px;">
+                        <i class="ti ti-chalkboard text-success fs-4"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Teachers</div>
+                        <div class="fw-bold fs-4">{{ total_teachers }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="rounded-circle bg-info bg-opacity-10 d-flex align-items-center justify-content-center flex-shrink-0" style="width:50px;height:50px;">
+                        <i class="ti ti-building-school text-info fs-4"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Classes</div>
+                        <div class="fw-bold fs-4">{{ total_classes }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="rounded-circle bg-warning bg-opacity-10 d-flex align-items-center justify-content-center flex-shrink-0" style="width:50px;height:50px;">
+                        <i class="ti ti-lock text-warning fs-4"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Published Sequences</div>
+                        <div class="fw-bold fs-4">{{ published_sequences }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Cards -->
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card shadow h-100 border-0 border-top border-primary border-4">
                 <div class="card-body text-center d-flex flex-column">
-                    <div class="display-4 text-primary mb-3"><i class="ti ti-database"></i></div>
+                    <div class="display-5 text-primary mb-3"><i class="ti ti-database"></i></div>
                     <h5 class="card-title">System Management</h5>
-                    <p class="card-text text-muted flex-grow-1">Manage academic years, terms, classes, subjects, users, and enrollments using the built-in system interface.</p>
+                    <p class="card-text text-muted flex-grow-1">Manage academic years, terms, sequences, classes, subjects, users and enrollments.</p>
                     <a href="/admin/" class="btn btn-outline-primary mt-3">Open Admin Panel</a>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4 mb-4">
-            <div class="card shadow h-100 border-top border-success border-4">
+        <div class="col-md-4">
+            <div class="card shadow h-100 border-0 border-top border-success border-4">
                 <div class="card-body text-center d-flex flex-column">
-                    <div class="display-4 text-success mb-3"><i class="ti ti-broadcast"></i></div>
+                    <div class="display-5 text-success mb-3"><i class="ti ti-broadcast"></i></div>
                     <h5 class="card-title">Publish Results</h5>
-                    <p class="card-text text-muted flex-grow-1">Lock teacher mark entries for a sequence and officially publish the results to parents and students.</p>
+                    <p class="card-text text-muted flex-grow-1">Lock teacher mark entries and officially publish results to students and parents.</p>
                     <a href="{% url 'school:publish_sequence' %}" class="btn btn-outline-success mt-3">Publish Sequences</a>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4 mb-4">
-            <div class="card shadow h-100 border-top border-info border-4 opacity-50">
+        <div class="col-md-4">
+            <div class="card shadow h-100 border-0 border-top border-info border-4">
                 <div class="card-body text-center d-flex flex-column">
-                    <div class="display-4 text-info mb-3"><i class="ti ti-file-certificate"></i></div>
-                    <h5 class="card-title">Official Report Cards</h5>
-                    <p class="card-text text-muted flex-grow-1">Generate and download official PDF report cards for classes.</p>
-                    <a href="{% url 'reports:admin_hub' %}" class="btn btn-outline-info mt-3">Go to Reports Hub</a>
+                    <div class="display-5 text-info mb-3"><i class="ti ti-file-certificate"></i></div>
+                    <h5 class="card-title">Report Cards</h5>
+                    <p class="card-text text-muted flex-grow-1">View, download and batch-export official PDF report cards for any class.</p>
+                    <a href="{% url 'reports:admin_hub' %}" class="btn btn-outline-info mt-3">Reports Hub</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow h-100 border-0 border-top border-warning border-4">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="display-5 text-warning mb-3"><i class="ti ti-chart-bar"></i></div>
+                    <h5 class="card-title">Analytics</h5>
+                    <p class="card-text text-muted flex-grow-1">View class performance charts, subject averages, pass rates, and student rankings.</p>
+                    <a href="{% url 'reports:analytics' %}" class="btn btn-outline-warning mt-3">View Analytics</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow h-100 border-0 border-top border-secondary border-4">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="display-5 text-secondary mb-3"><i class="ti ti-heart-handshake"></i></div>
+                    <h5 class="card-title">Parent Accounts</h5>
+                    <p class="card-text text-muted flex-grow-1">Approve or manage parent registrations and view all linked student relationships.
+                        {% if pending_parents %}
+                            <span class="badge bg-warning text-dark ms-1">{{ pending_parents|length }} pending</span>
+                        {% endif %}
+                    </p>
+                    <a href="/admin/accounts/parent/" class="btn btn-outline-secondary mt-3">Manage Parents</a>
                 </div>
             </div>
         </div>
     </div>
+
 </div>
 {% endblock %}
