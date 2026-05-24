@@ -35,8 +35,7 @@
                             <i class="ti ti-check"></i> Approve
                         </button>
                     </form>
-                    <form method="post" action="{% url 'accounts:reject_parent' parent_user.id %}" class="d-inline"
-                          onsubmit="return confirm('Reject and delete this registration?')">
+                    <form method="post" action="{% url 'accounts:reject_parent' parent_user.id %}" class="d-inline reject-form">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-sm btn-outline-danger py-0">
                             <i class="ti ti-x"></i> Reject
@@ -110,10 +109,10 @@
         <div class="col-md-4">
             <div class="card shadow h-100 border-0 border-top border-primary border-4">
                 <div class="card-body text-center d-flex flex-column">
-                    <div class="display-5 text-primary mb-3"><i class="ti ti-database"></i></div>
-                    <h5 class="card-title">System Management</h5>
-                    <p class="card-text text-muted flex-grow-1">Manage academic years, terms, sequences, classes, subjects, users and enrollments.</p>
-                    <a href="/school-admin-secure-2025/" class="btn btn-outline-primary mt-3">Open Admin Panel</a>
+                    <div class="display-5 text-primary mb-3"><i class="ti ti-users"></i></div>
+                    <h5 class="card-title">Students</h5>
+                    <p class="card-text text-muted flex-grow-1">View all registered students, their classes and enrollment records.</p>
+                    <a href="{% url 'accounts:manage_students' %}" class="btn btn-outline-primary mt-3">View Students</a>
                 </div>
             </div>
         </div>
@@ -161,11 +160,34 @@
                             <span class="badge bg-warning text-dark ms-1">{{ pending_parents|length }} pending</span>
                         {% endif %}
                     </p>
-                    <a href="/school-admin-secure-2025/accounts/parent/" class="btn btn-outline-secondary mt-3">Manage Parents</a>
+                    <a href="{% url 'accounts:manage_parents' %}" class="btn btn-outline-secondary mt-3">Manage Parents</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow h-100 border-0 border-top border-dark border-4">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="display-5 text-dark mb-3"><i class="ti ti-settings"></i></div>
+                    <h5 class="card-title">System Settings</h5>
+                    <p class="card-text text-muted flex-grow-1">Configure academic years, terms, sequences, classes, subjects and teacher assignments.</p>
+                    <a href="/school-admin-secure-2025/" class="btn btn-outline-dark mt-3">System Settings</a>
                 </div>
             </div>
         </div>
     </div>
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.reject-form').forEach(function(form) {
+    form.addEventListener('submit', function(e) {
+        if (!confirm('Reject and permanently delete this registration?')) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
 {% endblock %}

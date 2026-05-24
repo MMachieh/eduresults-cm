@@ -1,144 +1,174 @@
 {% extends 'base.html' %}
 
 {% block title %}Report Cards Hub - EduResults CM{% endblock %}
+{% block nav_reports %}active{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col">
             <h2>Official Report Cards</h2>
-            <p class="text-muted">View, generate and download official PDF report cards.</p>
+            <p class="text-muted">View individual report cards or batch-download PDFs for an entire class.</p>
         </div>
     </div>
 
     <!-- Individual Report Card Viewer -->
     <div class="card shadow mb-4">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="ti ti-eye"></i> View / Download Individual Report Card</h5>
+        </div>
         <div class="card-body">
-            <h5 class="card-title mb-4">View Report Card</h5>
-            <p>Select a published sequence and student to view the report card online before downloading.</p>
-            
-            <form method="get" action="" id="viewForm" onsubmit="return handleView()">
-                <div class="row g-3">
-                    <div class="col-md-5">
-                        <label for="sequence_view" class="form-label fw-bold">1. Select Sequence</label>
-                        <select id="sequence_view" class="form-select" required onchange="updateStudents()">
-                            <option value="" selected disabled>Choose published sequence...</option>
-                            {% for seq in sequences %}
-                                <option value="{{ seq.id }}" data-academic-year="{{ seq.term.academic_year.id }}">{{ seq }}</option>
-                            {% empty %}
-                                <option value="" disabled>No published sequences available.</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    
-                    <div class="col-md-5">
-                        <label for="student_id" class="form-label fw-bold">2. Select Student</label>
-                        <select id="student_id" class="form-select" required>
-                            <option value="" selected disabled>Choose student...</option>
-                        </select>
-                    </div>
-                    
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-info w-100">
-                            <i class="ti ti-eye"></i> View Card
-                        </button>
-                    </div>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="sequence_view" class="form-label fw-bold">1. Select Sequence</label>
+                    <select id="sequence_view" class="form-select">
+                        <option value="" selected disabled>Choose published sequence...</option>
+                        {% for seq in sequences %}
+                            <option value="{{ seq.id }}" data-academic-year="{{ seq.term.academic_year.id }}">{{ seq }}</option>
+                        {% empty %}
+                            <option value="" disabled>No published sequences available.</option>
+                        {% endfor %}
+                    </select>
                 </div>
-            </form>
+
+                <div class="col-md-4">
+                    <label for="student_id" class="form-label fw-bold">2. Select Student</label>
+                    <select id="student_id" class="form-select" disabled>
+                        <option value="" selected disabled>Select a sequence first...</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button id="btn_view" class="btn btn-info w-100" disabled>
+                        <i class="ti ti-eye"></i> View Card
+                    </button>
+                </div>
+                <div class="col-md-2">
+                    <button id="btn_pdf" class="btn btn-primary w-100" disabled>
+                        <i class="ti ti-file-type-pdf"></i> PDF
+                    </button>
+                </div>
+            </div>
+            <div id="student_loading" class="text-muted small mt-2" style="display:none;">
+                <i class="ti ti-loader-2"></i> Loading students...
+            </div>
         </div>
     </div>
 
     <!-- Batch PDF Download -->
     <div class="card shadow">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="ti ti-download"></i> Batch PDF Download (Whole Class)</h5>
+        </div>
         <div class="card-body">
-            <h5 class="card-title mb-4">Batch PDF Download</h5>
-            <p>Select a published sequence and a class to generate a ZIP file containing the official PDF report cards for all enrolled students.</p>
-            
-            <form method="get" action="" id="downloadForm" onsubmit="return handleDownload()">
-                <div class="row g-3">
-                    <div class="col-md-5">
-                        <label for="sequence" class="form-label fw-bold">1. Select Sequence</label>
-                        <select id="sequence" class="form-select" required>
-                            <option value="" selected disabled>Choose published sequence...</option>
-                            {% for seq in sequences %}
-                                <option value="{{ seq.id }}">{{ seq }}</option>
-                            {% empty %}
-                                <option value="" disabled>No published sequences available.</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    
-                    <div class="col-md-5">
-                        <label for="class_id" class="form-label fw-bold">2. Select Class</label>
-                        <select id="class_id" class="form-select" required>
-                            <option value="" selected disabled>Choose class...</option>
-                            {% for cls in classes %}
-                                <option value="{{ cls.id }}">{{ cls }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary w-100" {% if not sequences %}disabled{% endif %}>
-                            <i class="ti ti-download"></i> Download ZIP
-                        </button>
-                    </div>
+            <p class="text-muted small mb-3">Download a ZIP file containing the official PDF report cards for all enrolled students in a class.</p>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label for="batch_sequence" class="form-label fw-bold">1. Select Sequence</label>
+                    <select id="batch_sequence" class="form-select">
+                        <option value="" selected disabled>Choose published sequence...</option>
+                        {% for seq in sequences %}
+                            <option value="{{ seq.id }}">{{ seq }}</option>
+                        {% empty %}
+                            <option value="" disabled>No published sequences available.</option>
+                        {% endfor %}
+                    </select>
                 </div>
-            </form>
+
+                <div class="col-md-5">
+                    <label for="batch_class" class="form-label fw-bold">2. Select Class</label>
+                    <select id="batch_class" class="form-select">
+                        <option value="" selected disabled>Choose class...</option>
+                        {% for cls in classes %}
+                            <option value="{{ cls.id }}">{{ cls }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button id="btn_zip" class="btn btn-success w-100" {% if not sequences %}disabled{% endif %}>
+                        <i class="ti ti-archive"></i> Download ZIP
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
-// Get students for selected sequence
-async function updateStudents() {
-    var seq_id = document.getElementById('sequence_view').value;
-    var seq_option = document.querySelector(`#sequence_view option[value="${seq_id}"]`);
-    var ay_id = seq_option ? seq_option.getAttribute('data-academic-year') : null;
-    
-    if(!seq_id || !ay_id) {
-        document.getElementById('student_id').innerHTML = '<option value="" selected disabled>Choose student...</option>';
-        return;
-    }
-    
+const API_URL = "{% url 'reports:api_enrollments' %}";
+const VIEW_BASE = "{% url 'reports:view_report_card' sequence_id=999999 student_id=888888 %}";
+const PDF_BASE  = "{% url 'reports:download_pdf' sequence_id=999999 student_id=888888 %}";
+const ZIP_BASE  = "{% url 'reports:download_zip' sequence_id=999999 class_id=888888 %}";
+
+const seqSel      = document.getElementById('sequence_view');
+const stuSel      = document.getElementById('student_id');
+const btnView     = document.getElementById('btn_view');
+const btnPdf      = document.getElementById('btn_pdf');
+const btnZip      = document.getElementById('btn_zip');
+const batchSeq    = document.getElementById('batch_sequence');
+const batchClass  = document.getElementById('batch_class');
+const loadingMsg  = document.getElementById('student_loading');
+
+// When sequence changes — load students via API
+seqSel.addEventListener('change', async function() {
+    const opt = seqSel.options[seqSel.selectedIndex];
+    const ayId = opt.getAttribute('data-academic-year');
+    stuSel.innerHTML = '<option value="" selected disabled>Loading...</option>';
+    stuSel.disabled = true;
+    btnView.disabled = true;
+    btnPdf.disabled = true;
+    loadingMsg.style.display = 'block';
+
     try {
-        const url = `{% url 'reports:api_enrollments' %}?academic_year=${ay_id}`;
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        let options = '<option value="" selected disabled>Choose student...</option>';
-        data.enrollments.forEach(e => {
-            options += `<option value="${e.student_id}">${e.student_name} (${e.matricule})</option>`;
-        });
-        
-        document.getElementById('student_id').innerHTML = options;
-    } catch(e) {
-        console.error('Error loading students:', e);
+        const resp = await fetch(`${API_URL}?academic_year=${ayId}`);
+        const data = await resp.json();
+        if (data.enrollments && data.enrollments.length > 0) {
+            let html = '<option value="" selected disabled>Choose student...</option>';
+            data.enrollments.forEach(e => {
+                html += `<option value="${e.student_id}">${e.student_name} (${e.matricule})</option>`;
+            });
+            stuSel.innerHTML = html;
+            stuSel.disabled = false;
+        } else {
+            stuSel.innerHTML = '<option value="" disabled>No students enrolled</option>';
+        }
+    } catch(err) {
+        stuSel.innerHTML = '<option value="" disabled>Error loading students</option>';
+        console.error(err);
     }
-}
+    loadingMsg.style.display = 'none';
+});
 
-function handleView() {
-    var seq_id = document.getElementById('sequence_view').value;
-    var student_id = document.getElementById('student_id').value;
-    if(seq_id && student_id) {
-        var url = "{% url 'reports:view_report_card' sequence_id=999999 student_id=888888 %}";
-        url = url.replace('999999', seq_id).replace('888888', student_id);
-        window.location.href = url;
-        return false;
-    }
-    return true;
-}
+// Enable buttons when student is selected
+stuSel.addEventListener('change', function() {
+    const ready = stuSel.value && seqSel.value;
+    btnView.disabled = !ready;
+    btnPdf.disabled = !ready;
+});
 
-function handleDownload() {
-    var seq_id = document.getElementById('sequence').value;
-    var class_id = document.getElementById('class_id').value;
-    if(seq_id && class_id) {
-        var url = "{% url 'reports:download_zip' sequence_id=999999 class_id=888888 %}";
-        url = url.replace('999999', seq_id).replace('888888', class_id);
-        window.location.href = url;
-        return false;
-    }
-    return true;
+btnView.addEventListener('click', function() {
+    const url = VIEW_BASE.replace('999999', seqSel.value).replace('888888', stuSel.value);
+    window.open(url, '_blank');
+});
+
+btnPdf.addEventListener('click', function() {
+    const url = PDF_BASE.replace('999999', seqSel.value).replace('888888', stuSel.value);
+    window.location.href = url;
+});
+
+// Batch download
+function updateBatchBtn() {
+    btnZip.disabled = !(batchSeq.value && batchClass.value);
 }
+batchSeq.addEventListener('change', updateBatchBtn);
+batchClass.addEventListener('change', updateBatchBtn);
+
+btnZip.addEventListener('click', function() {
+    const url = ZIP_BASE.replace('999999', batchSeq.value).replace('888888', batchClass.value);
+    window.location.href = url;
+});
 </script>
 {% endblock %}

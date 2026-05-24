@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Students - EduResults CM{% endblock %}
+{% block nav_students %}active{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h2>Students</h2>
+            <p class="text-muted">{{ total }} student{{ total|pluralize }} registered</p>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="d-flex gap-2">
+                <input type="text" name="q" value="{{ q }}" class="form-control"
+                       placeholder="Search by name or matricule...">
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="ti ti-search"></i> Search
+                </button>
+                {% if q %}
+                <a href="{% url 'accounts:manage_students' %}" class="btn btn-outline-secondary">
+                    <i class="ti ti-x"></i> Clear
+                </a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th style="width:40px;">#</th>
+                            <th>Name</th>
+                            <th>Matricule</th>
+                            <th>Date of Birth</th>
+                            <th>Current Class</th>
+                            <th>Username</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in student_rows %}
+                        <tr>
+                            <td class="text-muted small">{{ forloop.counter }}</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="rounded-circle bg-primary bg-opacity-15 d-flex align-items-center justify-content-center flex-shrink-0 text-primary fw-bold"
+                                         style="width:36px;height:36px;font-size:.85rem;">
+                                        {{ row.student.user.first_name|first|upper }}{{ row.student.user.last_name|first|upper }}
+                                    </div>
+                                    <span class="fw-bold">{{ row.student.user.get_full_name }}</span>
+                                </div>
+                            </td>
+                            <td><code>{{ row.student.matricule }}</code></td>
+                            <td class="text-muted">{{ row.student.date_of_birth|default:"—" }}</td>
+                            <td>
+                                {% if row.enrollment %}
+                                    <span class="badge bg-primary bg-opacity-15 text-primary fw-semibold">
+                                        {{ row.enrollment.class_group }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted small">Not enrolled</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted small">{{ row.student.user.username }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                {% if q %}
+                                    No students found matching <strong>{{ q }}</strong>.
+                                {% else %}
+                                    No students registered yet.
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

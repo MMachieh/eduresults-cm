@@ -133,6 +133,77 @@ def reject_parent(request, user_id):
     return redirect('accounts:dashboard')
 
 
+@login_required
+@role_required('admin')
+def manage_students(request):
+    from school.models import Enrollment
+    q = request.GET.get('q', '').strip()
+    students = Student.objects.select_related('user')
+    if q:
+        students = students.filter(
+            user__first_name__icontains=q
+        ) | Student.objects.filter(
+            user__last_name__icontains=q
+        ) | Student.objects.filter(
+            matricule__icontains=q
+        )
+    students = students.order_by('user__last_name', 'user__first_name').distinct()
+    # Attach current enrollment to each student
+    result = []
+    for stu in students:
+        enr = Enrollment.objects.filter(student=stu).select_related(
+            'class_group', 'academic_year'
+        ).order_by('-academic_year__start_date').first()
+        result.append({'student': stu, 'enrollment': enr})
+    return render(request, 'accounts/manage/students.html', {
+        'student_rows': result,
+        'q': q,
+        'total': students.count(),
+    })
+
+
+@login_required
+@role_required('admin')
+def manage_teachers(request):
+    from school.models import TeacherAssignment
+    q = request.GET.get('q', '').strip()
+    teachers = Teacher.objects.select_related('user')
+    if q:
+        teachers = teachers.filter(
+            user__first_name__icontains=q
+        ) | Teacher.objects.filter(
+            user__last_name__icontains=q
+        ) | Teacher.objects.filter(
+            staff_id__icontains=q
+        )
+    teachers = teachers.order_by('user__last_name', 'user__first_name').distinct()
+    result = []
+    for t in teachers:
+        assignments = TeacherAssignment.objects.filter(teacher=t).select_related(
+            'subject', 'class_group', 'academic_year'
+        ).order_by('class_group__level')
+        result.append({'teacher': t, 'assignments': assignments})
+    return render(request, 'accounts/manage/teachers.html', {
+        'teacher_rows': result,
+        'q': q,
+    })
+
+
+@login_required
+@role_required('admin')
+def manage_parents(request):
+    pending = User.objects.filter(role='parent', is_active=False).prefetch_related(
+        'parent_profile__students__user'
+    ).order_by('date_joined')
+    active = User.objects.filter(role='parent', is_active=True).prefetch_related(
+        'parent_profile__students__user'
+    ).order_by('last_name', 'first_name')
+    return render(request, 'accounts/manage/parents.html', {
+        'pending_parents': pending,
+        'active_parents': active,
+    })
+
+
 def error_400(request, exception):
     return render(request, 'errors/400.html', status=400)
 

@@ -44,18 +44,19 @@
         <i class="ti ti-layout-dashboard"></i> Dashboard
       </a>
 
-      <div class="nav-section">School</div>
-      <a href="/school-admin-secure-2025/" class="nav-item {% block nav_structure %}{% endblock %}">
-        <i class="ti ti-building-school"></i> School Structure
-      </a>
-      <a href="/school-admin-secure-2025/accounts/student/" class="nav-item {% block nav_students %}{% endblock %}">
+      <div class="nav-section">People</div>
+      <a href="{% url 'accounts:manage_students' %}" class="nav-item {% block nav_students %}{% endblock %}">
         <i class="ti ti-users"></i> Students
       </a>
-      <a href="/school-admin-secure-2025/accounts/teacher/" class="nav-item {% block nav_teachers %}{% endblock %}">
+      <a href="{% url 'accounts:manage_teachers' %}" class="nav-item {% block nav_teachers %}{% endblock %}">
         <i class="ti ti-chalkboard"></i> Teachers
       </a>
-      <a href="/school-admin-secure-2025/accounts/parent/" class="nav-item {% block nav_parents %}{% endblock %}">
+      <a href="{% url 'accounts:manage_parents' %}" class="nav-item {% block nav_parents %}{% endblock %}">
         <i class="ti ti-heart-handshake"></i> Parents
+      </a>
+      <div class="nav-section">School</div>
+      <a href="/school-admin-secure-2025/" class="nav-item {% block nav_structure %}{% endblock %}">
+        <i class="ti ti-settings"></i> System Settings
       </a>
 
       <div class="nav-section">Results</div>

@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Teachers - EduResults CM{% endblock %}
+{% block nav_teachers %}active{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h2>Teachers</h2>
+            <p class="text-muted">{{ teacher_rows|length }} teacher{{ teacher_rows|length|pluralize }} registered</p>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="d-flex gap-2">
+                <input type="text" name="q" value="{{ q }}" class="form-control"
+                       placeholder="Search by name or staff ID...">
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="ti ti-search"></i> Search
+                </button>
+                {% if q %}
+                <a href="{% url 'accounts:manage_teachers' %}" class="btn btn-outline-secondary">
+                    <i class="ti ti-x"></i> Clear
+                </a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th style="width:40px;">#</th>
+                            <th>Name</th>
+                            <th>Staff ID</th>
+                            <th>Specialisation</th>
+                            <th>Assignments</th>
+                            <th>Username</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in teacher_rows %}
+                        <tr>
+                            <td class="text-muted small">{{ forloop.counter }}</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="rounded-circle bg-success bg-opacity-15 d-flex align-items-center justify-content-center flex-shrink-0 text-success fw-bold"
+                                         style="width:36px;height:36px;font-size:.85rem;">
+                                        {{ row.teacher.user.first_name|first|upper }}{{ row.teacher.user.last_name|first|upper }}
+                                    </div>
+                                    <span class="fw-bold">{{ row.teacher.user.get_full_name }}</span>
+                                </div>
+                            </td>
+                            <td><code>{{ row.teacher.staff_id }}</code></td>
+                            <td class="text-muted">{{ row.teacher.specialisation|default:"—" }}</td>
+                            <td>
+                                {% if row.assignments %}
+                                <div class="d-flex flex-wrap gap-1">
+                                    {% for a in row.assignments %}
+                                        <span class="badge bg-secondary">{{ a.class_group.level }}{{ a.class_group.suffix|default:"" }} · {{ a.subject.name }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                    <span class="text-muted small">No assignments</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted small">{{ row.teacher.user.username }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                {% if q %}
+                                    No teachers found matching <strong>{{ q }}</strong>.
+                                {% else %}
+                                    No teachers registered yet.
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

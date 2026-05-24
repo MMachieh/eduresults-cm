@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}Parents - EduResults CM{% endblock %}
+{% block nav_parents %}active{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h2>Parent Accounts</h2>
+            <p class="text-muted">Manage parent registrations and their linked children.</p>
+        </div>
+    </div>
+
+    <!-- Pending Approvals -->
+    {% if pending_parents %}
+    <div class="card shadow border-0 border-start border-warning border-4 mb-4">
+        <div class="card-header bg-warning bg-opacity-10">
+            <h5 class="mb-0 text-warning">
+                <i class="ti ti-alert-triangle"></i>
+                {{ pending_parents|length }} Pending Approval{{ pending_parents|length|pluralize }}
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Linked Children</th>
+                        <th>Registered</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for parent_user in pending_parents %}
+                    <tr>
+                        <td class="fw-bold">{{ parent_user.get_full_name|default:parent_user.username }}</td>
+                        <td class="text-muted">{{ parent_user.username }}</td>
+                        <td>
+                            {% for child in parent_user.parent_profile.students.all %}
+                                <span class="badge bg-info bg-opacity-20 text-info">
+                                    {{ child.user.get_full_name }} ({{ child.matricule }})
+                                </span>
+                            {% empty %}
+                                <span class="text-muted small">None</span>
+                            {% endfor %}
+                        </td>
+                        <td class="text-muted small">{{ parent_user.date_joined|date:"d M Y" }}</td>
+                        <td class="text-end">
+                            <form method="post" action="{% url 'accounts:approve_parent' parent_user.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-success">
+                                    <i class="ti ti-check"></i> Approve
+                                </button>
+                            </form>
+                            <form method="post" action="{% url 'accounts:reject_parent' parent_user.id %}" class="d-inline ms-1"
+                                  onsubmit="return confirm('Reject and permanently delete this registration?')">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="ti ti-x"></i> Reject
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Active Parents -->
+    <div class="card shadow">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="ti ti-users"></i> Active Parents ({{ active_parents|length }})</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width:40px;">#</th>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Phone</th>
+                            <th>Linked Children</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for parent_user in active_parents %}
+                        <tr>
+                            <td class="text-muted small">{{ forloop.counter }}</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="rounded-circle bg-info bg-opacity-15 d-flex align-items-center justify-content-center flex-shrink-0 text-info fw-bold"
+                                         style="width:36px;height:36px;font-size:.85rem;">
+                                        {{ parent_user.first_name|first|upper }}{{ parent_user.last_name|first|upper }}
+                                    </div>
+                                    <span class="fw-bold">{{ parent_user.get_full_name|default:parent_user.username }}</span>
+                                </div>
+                            </td>
+                            <td class="text-muted">{{ parent_user.username }}</td>
+                            <td class="text-muted">{{ parent_user.parent_profile.phone_number|default:"—" }}</td>
+                            <td>
+                                {% for child in parent_user.parent_profile.students.all %}
+                                    <span class="badge bg-primary bg-opacity-15 text-primary me-1">
+                                        {{ child.user.get_full_name }} ({{ child.matricule }})
+                                    </span>
+                                {% empty %}
+                                    <span class="text-muted small">No children linked</span>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">No active parent accounts yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
