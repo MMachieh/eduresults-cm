@@ -8,7 +8,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ['SECRET_KEY']
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+#ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = ['*']  # For development only, replace with specific hosts in production
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -178,4 +179,4 @@ LOGGING = {
             'propagate': False,
         },
     },
-}
+}
