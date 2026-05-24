@@ -5,12 +5,42 @@
 
 {% block content %}
 <div class="container mt-4">
-    <div class="row mb-4">
+    <div class="row mb-4 align-items-center">
         <div class="col">
             <h2>Student Dashboard</h2>
             <p class="text-muted">Welcome back, {{ request.user.get_full_name|default:request.user.username }}</p>
         </div>
     </div>
+
+    <!-- Latest result highlight -->
+    {% if latest_seq and latest_avg is not None %}
+    <div class="card border-0 shadow mb-4" style="background:linear-gradient(135deg,#0C447C,#1a73e8); color:#fff;">
+        <div class="card-body d-flex flex-wrap align-items-center gap-4 py-4 px-4">
+            <div class="text-center" style="min-width:120px;">
+                <div class="text-white-50 small text-uppercase">Latest Average</div>
+                <div class="fw-bold" style="font-size:3rem;">{{ latest_avg|floatformat:2 }}</div>
+                <div class="text-white-50 small">/20 &bull; {{ latest_seq }}</div>
+            </div>
+            {% if latest_rank %}
+            <div class="text-center" style="min-width:120px;">
+                <div class="text-white-50 small text-uppercase">Class Rank</div>
+                <div class="fw-bold" style="font-size:3rem;">{{ latest_rank }}</div>
+                <div class="text-white-50 small">of {{ latest_total }} students</div>
+            </div>
+            {% endif %}
+            <div class="ms-auto d-flex flex-column gap-2">
+                {% if latest_avg >= 10 %}
+                    <span class="badge bg-success fs-6 py-2 px-3"><i class="ti ti-circle-check"></i> PASSED</span>
+                {% else %}
+                    <span class="badge bg-danger fs-6 py-2 px-3"><i class="ti ti-circle-x"></i> FAILED</span>
+                {% endif %}
+                <a href="{% url 'reports:online_report_card_self' latest_seq.id %}" class="btn btn-sm btn-light mt-1">
+                    <i class="ti ti-file-certificate"></i> View Report Card
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     <div class="row g-4">
         <div class="col-md-4">
@@ -41,7 +71,7 @@
                     <div class="display-5 text-secondary mb-3"><i class="ti ti-file-certificate"></i></div>
                     <h5 class="card-title">Report Cards</h5>
                     <p class="card-text text-muted flex-grow-1">View and print your official sequence report cards online.</p>
-                    <a href="{% url 'marks:student_results' %}" class="btn btn-outline-secondary mt-3">Go to Results</a>
+                    <a href="{% url 'reports:student_report_cards' %}" class="btn btn-outline-secondary mt-3">View Report Cards</a>
                 </div>
             </div>
         </div>

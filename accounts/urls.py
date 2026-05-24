@@ -13,6 +13,10 @@ urlpatterns = [
     path('approve-parent/<int:user_id>/', views.approve_parent, name='approve_parent'),
     path('reject-parent/<int:user_id>/',  views.reject_parent,  name='reject_parent'),
 
+    # Password Change (for non-admin users)
+    path('password_change/', auth_views.PasswordChangeView.as_view(template_name='accounts/password_change.html', success_url='/accounts/password_change/done/'), name='password_change'),
+    path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(template_name='accounts/password_change_done.html'), name='password_change_done'),
+
     # Password Reset URLs
     path('password_reset/', auth_views.PasswordResetView.as_view(template_name='registration/password_reset_form.html'), name='password_reset'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='registration/password_reset_done.html'), name='password_reset_done'),

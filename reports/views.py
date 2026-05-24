@@ -161,6 +161,76 @@ def api_get_enrollments(request):
 
 
 @login_required
+@role_required('student')
+def student_report_cards(request):
+    student = request.user.student_profile
+    sequences = Sequence.objects.filter(is_published=True).select_related('term__academic_year').order_by(
+        'term__academic_year__start_date', 'term__name', 'name'
+    )
+    from marks.services import compute_sequence_average, get_student_rank
+    report_cards = []
+    for seq in sequences:
+        avg, _, _, _ = compute_sequence_average(student, seq)
+        enrollment = Enrollment.objects.filter(student=student, academic_year=seq.term.academic_year).first()
+        rank = total = None
+        if enrollment:
+            rank, total = get_student_rank(student, enrollment.class_group, seq)
+        report_cards.append({
+            'sequence': seq,
+            'average': avg,
+            'rank': rank,
+            'total': total,
+            'is_pass': avg is not None and avg >= 10,
+        })
+    return render(request, 'reports/student_report_cards.html', {
+        'student': student,
+        'report_cards': report_cards,
+    })
+
+
+@login_required
+@role_required('parent')
+def parent_report_cards(request):
+    parent = request.user.parent_profile
+    students = parent.students.select_related('user').all()
+    student_id = request.GET.get('student')
+
+    selected_student = None
+    report_cards = []
+
+    if student_id:
+        try:
+            selected_student = students.get(id=int(student_id))
+        except (Student.DoesNotExist, ValueError):
+            pass
+
+    if selected_student:
+        sequences = Sequence.objects.filter(is_published=True).select_related('term__academic_year').order_by(
+            'term__academic_year__start_date', 'term__name', 'name'
+        )
+        from marks.services import compute_sequence_average, get_student_rank
+        for seq in sequences:
+            avg, _, _, _ = compute_sequence_average(selected_student, seq)
+            enrollment = Enrollment.objects.filter(student=selected_student, academic_year=seq.term.academic_year).first()
+            rank = total = None
+            if enrollment:
+                rank, total = get_student_rank(selected_student, enrollment.class_group, seq)
+            report_cards.append({
+                'sequence': seq,
+                'average': avg,
+                'rank': rank,
+                'total': total,
+                'is_pass': avg is not None and avg >= 10,
+            })
+
+    return render(request, 'reports/parent_report_cards.html', {
+        'students': students,
+        'selected_student': selected_student,
+        'report_cards': report_cards,
+    })
+
+
+@login_required
 @role_required('admin')
 def analytics(request):
     sequences = Sequence.objects.filter(is_published=True).select_related('term__academic_year')

@@ -199,6 +199,7 @@ def student_analytics(request):
                 rank, total = get_student_rank(student, enrollment.class_group, seq)
             trend_list.append({
                 'label': str(seq),
+                'seq_id': seq.id,
                 'average': float(avg),
                 'rank': rank,
                 'total': total,

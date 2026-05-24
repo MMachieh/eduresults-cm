@@ -82,6 +82,7 @@
                                 <th class="text-center">Average (/20)</th>
                                 <th class="text-center">Class Rank</th>
                                 <th class="text-center">Status</th>
+                                <th class="text-center">Report Card</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -100,6 +101,11 @@
                                     {% else %}
                                         <span class="badge bg-danger">Failed</span>
                                     {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <a href="{% url 'reports:online_report_card_self' entry.seq_id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="ti ti-file-certificate"></i> View
+                                    </a>
                                 </td>
                             </tr>
                             {% endfor %}

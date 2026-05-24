@@ -12,4 +12,6 @@ urlpatterns = [
     path('pdf/<int:sequence_id>/<int:student_id>/',           views.download_pdf_report_card,  name='download_pdf'),
     path('zip/<int:sequence_id>/<int:class_id>/',             views.download_class_zip_reports, name='download_zip'),
     path('api/enrollments/',                                  views.api_get_enrollments,       name='api_enrollments'),
+    path('my-reports/',                                       views.student_report_cards,      name='student_report_cards'),
+    path('parent-reports/',                                   views.parent_report_cards,       name='parent_report_cards'),
 ]

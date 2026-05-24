@@ -45,16 +45,16 @@
       </a>
 
       <div class="nav-section">School</div>
-      <a href="/admin/" class="nav-item {% block nav_structure %}{% endblock %}">
+      <a href="/school-admin-secure-2025/" class="nav-item {% block nav_structure %}{% endblock %}">
         <i class="ti ti-building-school"></i> School Structure
       </a>
-      <a href="/admin/accounts/student/" class="nav-item {% block nav_students %}{% endblock %}">
+      <a href="/school-admin-secure-2025/accounts/student/" class="nav-item {% block nav_students %}{% endblock %}">
         <i class="ti ti-users"></i> Students
       </a>
-      <a href="/admin/accounts/teacher/" class="nav-item {% block nav_teachers %}{% endblock %}">
+      <a href="/school-admin-secure-2025/accounts/teacher/" class="nav-item {% block nav_teachers %}{% endblock %}">
         <i class="ti ti-chalkboard"></i> Teachers
       </a>
-      <a href="/admin/accounts/parent/" class="nav-item {% block nav_parents %}{% endblock %}">
+      <a href="/school-admin-secure-2025/accounts/parent/" class="nav-item {% block nav_parents %}{% endblock %}">
         <i class="ti ti-heart-handshake"></i> Parents
       </a>
 
@@ -92,6 +92,9 @@
       <a href="{% url 'marks:student_analytics' %}" class="nav-item {% block nav_s_analytics %}{% endblock %}">
         <i class="ti ti-chart-line"></i> Analytics
       </a>
+      <a href="{% url 'reports:student_report_cards' %}" class="nav-item {% block nav_s_reports %}{% endblock %}">
+        <i class="ti ti-file-certificate"></i> Report Cards
+      </a>
 
       {% elif user.is_parent %}
       <div class="nav-section">My Children</div>
@@ -101,10 +104,13 @@
       <a href="{% url 'marks:parent_results' %}" class="nav-item {% block nav_p_results %}{% endblock %}">
         <i class="ti ti-chart-bar"></i> Results
       </a>
+      <a href="{% url 'reports:parent_report_cards' %}" class="nav-item {% block nav_p_reports %}{% endblock %}">
+        <i class="ti ti-file-certificate"></i> Report Cards
+      </a>
       {% endif %}
 
       <div class="nav-section">Account</div>
-      <a href="/admin/password_change/" class="nav-item {% block nav_profile %}{% endblock %}">
+      <a href="{% if user.is_admin %}/school-admin-secure-2025/password_change/{% else %}{% url 'accounts:password_change' %}{% endif %}" class="nav-item {% block nav_profile %}{% endblock %}">
         <i class="ti ti-user"></i> My Profile
       </a>
       <a href="{% url 'accounts:logout' %}" class="nav-item nav-item-danger">
