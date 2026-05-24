@@ -17,9 +17,12 @@ def notify_parents_sequence_published(sequence):
     # Find all parents linked to these students
     parents = Parent.objects.filter(students__id__in=student_ids).select_related('user').distinct()
     
+    from_email = settings.DEFAULT_FROM_EMAIL
+    if not from_email:
+        return
+
     messages = []
     subject = f"Results Published: Sequence {sequence.name} - Term {sequence.term.name}"
-    from_email = settings.DEFAULT_FROM_EMAIL
     
     for parent in parents:
         if parent.user.email:
@@ -38,4 +41,7 @@ def notify_parents_sequence_published(sequence):
             messages.append((subject, message, from_email, [parent.user.email]))
             
     if messages:
-        send_mass_mail(tuple(messages), fail_silently=True)
+        try:
+            send_mass_mail(tuple(messages), fail_silently=True)
+        except Exception:
+            pass
