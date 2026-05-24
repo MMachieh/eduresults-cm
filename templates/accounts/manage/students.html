@@ -61,9 +61,7 @@
                             <td class="text-muted">{{ row.student.date_of_birth|default:"—" }}</td>
                             <td>
                                 {% if row.enrollment %}
-                                    <span class=" ">
-                                        {{ row.enrollment.class_group }}
-                                    </span>
+                                    {{ row.enrollment.class_group }}
                                 {% else %}
                                     <span class="text-muted small">Not enrolled</span>
                                 {% endif %}
