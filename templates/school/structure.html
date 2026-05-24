@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}School Structure - EduResults CM{% endblock %}
+{% block nav_structure %}active{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h2>School Structure</h2>
+            <p class="text-muted">Configure academic years, classes, subjects and teacher assignments.</p>
+        </div>
+    </div>
+
+    {% if active_year %}
+    <div class="alert alert-info border-0 shadow-sm mb-4">
+        <i class="ti ti-calendar me-2"></i>
+        Active Academic Year: <strong>{{ active_year.label }}</strong>
+        ({{ active_year.start_date|date:"d M Y" }} – {{ active_year.end_date|date:"d M Y" }})
+    </div>
+    {% endif %}
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card shadow h-100 border-0 border-top border-primary border-4">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="display-5 text-primary mb-3"><i class="ti ti-calendar"></i></div>
+                    <h5 class="card-title">Academic Years</h5>
+                    <p class="card-text text-muted flex-grow-1">Manage academic years, terms and sequences. Set the active year.</p>
+                    <a href="{% url 'school:academic_years' %}" class="btn btn-outline-primary mt-3">Manage Years</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow h-100 border-0 border-top border-success border-4">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="display-5 text-success mb-3"><i class="ti ti-building-school"></i></div>
+                    <h5 class="card-title">Classes</h5>
+                    <p class="card-text text-muted flex-grow-1">Create and manage class groups for each academic year.</p>
+                    <a href="{% url 'school:classes' %}" class="btn btn-outline-success mt-3">Manage Classes</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow h-100 border-0 border-top border-info border-4">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="display-5 text-info mb-3"><i class="ti ti-book"></i></div>
+                    <h5 class="card-title">Subjects</h5>
+                    <p class="card-text text-muted flex-grow-1">Define subjects, set coefficients and assign them to classes.</p>
+                    <a href="{% url 'school:subjects' %}" class="btn btn-outline-info mt-3">Manage Subjects</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow h-100 border-0 border-top border-warning border-4">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="display-5 text-warning mb-3"><i class="ti ti-user-plus"></i></div>
+                    <h5 class="card-title">Enrollments</h5>
+                    <p class="card-text text-muted flex-grow-1">Enroll students into classes for a specific academic year.</p>
+                    <a href="{% url 'school:enrollments' %}" class="btn btn-outline-warning mt-3">Manage Enrollments</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow h-100 border-0 border-top border-secondary border-4">
+                <div class="card-body text-center d-flex flex-column">
+                    <div class="display-5 text-secondary mb-3"><i class="ti ti-clipboard-list"></i></div>
+                    <h5 class="card-title">Teacher Assignments</h5>
+                    <p class="card-text text-muted flex-grow-1">Assign teachers to subjects and class groups for each year.</p>
+                    <a href="{% url 'school:assignments' %}" class="btn btn-outline-secondary mt-3">Manage Assignments</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if active_year %}
+    <!-- Quick Summary -->
+    <div class="row g-3 mt-4">
+        <div class="col-12">
+            <h5 class="text-muted mb-3">Active Year Overview — {{ active_year.label }}</h5>
+        </div>
+        {% for cls in classes %}
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="fw-bold">{{ cls }}</div>
+                    <div class="text-muted small">
+                        {{ cls.enrollments.count }} student{{ cls.enrollments.count|pluralize }}
+                    </div>
+                    {% if cls.class_teacher %}
+                    <div class="text-muted small mt-1">
+                        <i class="ti ti-chalkboard"></i> {{ cls.class_teacher.user.get_full_name }}
+                    </div>
+                    {% endif %}
+                    <div class="mt-2">
+                        {% for subj in cls.subjects.all %}
+                        <span class="badge bg-light text-dark border">{{ subj.name }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

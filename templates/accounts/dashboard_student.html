@@ -12,6 +12,20 @@
         </div>
     </div>
 
+    <!-- Current Class Info -->
+    {% if current_enrollment %}
+    <div class="alert border-0 shadow-sm mb-4 d-flex align-items-center gap-3" style="background:#e8f0fe;border-left:4px solid #0C447C !important;">
+        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width:44px;height:44px;background:#0C447C;">
+            <i class="ti ti-building-school text-white fs-5"></i>
+        </div>
+        <div>
+            <div class="text-muted small text-uppercase fw-semibold" style="letter-spacing:.05em;">Current Class</div>
+            <div class="fw-bold fs-5" style="color:#0C447C;">{{ current_enrollment.class_group }}</div>
+            <div class="text-muted small">{{ current_enrollment.class_group.academic_year.label }}</div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Latest result highlight -->
     {% if latest_seq and latest_avg is not None %}
     <div class="card border-0 shadow mb-4" style="background:linear-gradient(135deg,#0C447C,#1a73e8); color:#fff;">

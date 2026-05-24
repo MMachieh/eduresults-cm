@@ -104,9 +104,10 @@
                             <td class="text-muted">{{ parent_user.parent_profile.phone_number|default:"—" }}</td>
                             <td>
                                 {% for child in parent_user.parent_profile.students.all %}
-                                    <span class="badge bg-primary bg-opacity-15 text-primary me-1">
-                                        {{ child.user.get_full_name }} ({{ child.matricule }})
-                                    </span>
+                                    <div class="d-inline-flex align-items-center gap-1 me-2 mb-1 rounded px-2 py-1" style="background:#e8f0fe;">
+                                        <span class="fw-semibold small" style="color:#0C447C;">{{ child.user.get_full_name }}</span>
+                                        <code class="small">{{ child.matricule }}</code>
+                                    </div>
                                 {% empty %}
                                     <span class="text-muted small">No children linked</span>
                                 {% endfor %}

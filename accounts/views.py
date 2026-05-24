@@ -48,11 +48,15 @@ def dashboard(request):
             'published_sequences': published_sequences,
         })
     if user.is_student():
-        from school.models import Sequence, Enrollment
+        from school.models import Sequence, Enrollment, AcademicYear
         from marks.services import compute_sequence_average, get_student_rank
         student = user.student_profile
         latest_seq = Sequence.objects.filter(is_published=True).order_by('-id').first()
         latest_avg = latest_rank = latest_total = None
+        active_year = AcademicYear.objects.filter(is_active=True).first()
+        current_enrollment = Enrollment.objects.filter(
+            student=student, academic_year=active_year
+        ).select_related('class_group').first() if active_year else None
         if latest_seq:
             latest_avg, _, _, _ = compute_sequence_average(student, latest_seq)
             enrollment = Enrollment.objects.filter(student=student, academic_year=latest_seq.term.academic_year).first()
@@ -64,14 +68,21 @@ def dashboard(request):
             'latest_avg': latest_avg,
             'latest_rank': latest_rank,
             'latest_total': latest_total,
+            'current_enrollment': current_enrollment,
         })
     if user.is_parent():
-        from school.models import Sequence
+        from school.models import Sequence, Enrollment, AcademicYear
         parent = user.parent_profile
-        children = parent.students.select_related('user').all()
+        active_year = AcademicYear.objects.filter(is_active=True).first()
+        children_with_class = []
+        for child in parent.students.select_related('user').all():
+            enr = Enrollment.objects.filter(
+                student=child, academic_year=active_year
+            ).select_related('class_group').first() if active_year else None
+            children_with_class.append({'student': child, 'enrollment': enr})
         published_sequences = Sequence.objects.filter(is_published=True).count()
         return render(request, 'accounts/dashboard_parent.html', {
-            'children': children,
+            'children_with_class': children_with_class,
             'published_sequences': published_sequences,
         })
     return redirect('accounts:login')

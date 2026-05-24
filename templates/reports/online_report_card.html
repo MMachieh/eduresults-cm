@@ -16,17 +16,29 @@
 <div class="container mt-4 mb-5 print-container">
     <div class="row mb-3 d-print-none">
         <div class="col d-flex gap-2 flex-wrap">
-            <button class="btn btn-outline-secondary" onclick="window.history.back()">
-                <i class="ti ti-arrow-left"></i> Back
-            </button>
-            <button class="btn btn-outline-primary" onclick="window.print()">
-                <i class="ti ti-printer"></i> Print Draft
-            </button>
             {% if request.user.is_admin %}
+                <a href="{% url 'reports:admin_hub' %}" class="btn btn-outline-secondary">
+                    <i class="ti ti-arrow-left"></i> Back to Reports Hub
+                </a>
                 <a href="{% url 'reports:download_pdf' sequence.id student.id %}" class="btn btn-primary">
                     <i class="ti ti-file-type-pdf"></i> Download Official PDF
                 </a>
+            {% elif request.user.is_student %}
+                <a href="{% url 'reports:student_report_cards' %}" class="btn btn-outline-secondary">
+                    <i class="ti ti-arrow-left"></i> Back to My Reports
+                </a>
+            {% elif request.user.is_parent %}
+                <a href="{% url 'reports:parent_report_cards' %}" class="btn btn-outline-secondary">
+                    <i class="ti ti-arrow-left"></i> Back to Reports
+                </a>
+            {% else %}
+                <a href="{% url 'accounts:dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="ti ti-arrow-left"></i> Back
+                </a>
             {% endif %}
+            <button class="btn btn-outline-primary" onclick="window.print()">
+                <i class="ti ti-printer"></i> Print Draft
+            </button>
         </div>
     </div>
 

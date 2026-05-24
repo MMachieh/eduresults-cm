@@ -55,8 +55,8 @@
         <i class="ti ti-heart-handshake"></i> Parents
       </a>
       <div class="nav-section">School</div>
-      <a href="/school-admin-secure-2025/" class="nav-item {% block nav_structure %}{% endblock %}">
-        <i class="ti ti-settings"></i> System Settings
+      <a href="{% url 'school:structure' %}" class="nav-item {% block nav_structure %}{% endblock %}">
+        <i class="ti ti-settings"></i> School Structure
       </a>
 
       <div class="nav-section">Results</div>
@@ -111,7 +111,7 @@
       {% endif %}
 
       <div class="nav-section">Account</div>
-      <a href="{% if user.is_admin %}/school-admin-secure-2025/password_change/{% else %}{% url 'accounts:password_change' %}{% endif %}" class="nav-item {% block nav_profile %}{% endblock %}">
+      <a href="{% url 'accounts:password_change' %}" class="nav-item {% block nav_profile %}{% endblock %}">
         <i class="ti ti-user"></i> My Profile
       </a>
       <a href="{% url 'accounts:logout' %}" class="nav-item nav-item-danger">
