@@ -1,18 +1,19 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from accounts.decorators import role_required
+from accounts.models import Teacher, Student
 from .models import (
     AcademicYear,
     Class,
-    Subject,
-    Term,
-    Sequence,
-    TeacherAssignment,
     Enrollment,
+    Sequence,
+    Subject,
+    TeacherAssignment,
+    Term,
 )
-from accounts.models import Teacher, Student
-from django.contrib import messages
 from notifications.services import notify_parents_sequence_published
+
 
 @login_required
 @role_required('admin')
@@ -36,21 +37,16 @@ def admin_publish_sequence(request):
             if action == 'publish':
                 sequence.is_published = True
                 sequence.save()
-                messages.success(
-                    request,
-                    f"{sequence} has been published successfully. Marks are now locked and visible to students/parents."
-                )
+                messages.success(request, f"{sequence} has been published successfully. Marks are now locked and visible to students/parents.")
+                # Trigger email notification
                 notify_parents_sequence_published(sequence)
             elif action == 'unpublish':
                 sequence.is_published = False
                 sequence.save()
-                messages.warning(
-                    request,
-                    f"{sequence} has been unpublished. Marks are now hidden and can be edited."
-                )
-
+                messages.warning(request, f"{sequence} has been unpublished. Marks are now hidden and can be edited.")
+                
             return redirect('school:publish_sequence')
-
+            
     return render(request, 'school/publish_sequence.html', {
         'sequences': sequences
     })
