@@ -34,7 +34,7 @@
     <div class="card shadow">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
+                <table class="table table-hover mb-0 align-middle text-nowrap">
                     <thead class="table-dark">
                         <tr>
                             <th style="width:40px;">#</th>
@@ -59,7 +59,7 @@
                             <td class="text-muted">{{ row.teacher.specialisation|default:"—" }}</td>
                             <td>
                                 {% if row.assignments %}
-                                <div class="d-flex flex-wrap gap-1">
+                                <div class="d-flex gap-1">
                                     {% for a in row.assignments %}
                                         <span class="badge bg-secondary">{{ a.class_group.level }}{{ a.class_group.suffix|default:"" }} · {{ a.subject.name }}</span>
                                     {% endfor %}

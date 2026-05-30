@@ -135,10 +135,10 @@
         <i class="ti ti-menu-2"></i>
       </button>
       <div class="topbar-title">{% block page_title %}{% endblock %}</div>
-      <div class="topbar-user">
+      <a href="{% url 'accounts:password_change' %}" class="topbar-user text-decoration-none text-dark">
         <span class="topbar-name">{{ user.get_full_name|default:user.username }}</span>
         <img class="topbar-avatar" src="{% static 'img/default-avatar.svg' %}" alt="Avatar">
-      </div>
+      </a>
     </header>
 
     <!-- Flash messages -->
