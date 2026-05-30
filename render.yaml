@@ -1,0 +1,28 @@
+databases:
+  - name: eduresults-cm-db
+    plan: free
+    databaseName: eduresults_cm
+    user: eduresults_cm
+
+services:
+  - type: web
+    plan: free
+    name: eduresults-cm
+    runtime: python
+    buildCommand: './build.sh'
+    startCommand: 'python -m gunicorn eduresults_cm.asgi:application -k uvicorn.workers.UvicornWorker'
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: eduresults-cm-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
+      - key: DEBUG
+        value: 'False'
+      - key: CSRF_TRUSTED_ORIGINS
+        value: 'https://eduresults-cm.onrender.com'
+      - key: PYTHON_VERSION
+        value: '3.14.0'
