@@ -174,9 +174,22 @@
   // Mobile sidebar toggle
   const toggle = document.getElementById('sidebarToggle');
   const sidebar = document.getElementById('sidebar');
+  
   if (toggle) {
-    toggle.addEventListener('click', () => sidebar.classList.toggle('sidebar-open'));
+    toggle.addEventListener('click', (e) => {
+      sidebar.classList.toggle('sidebar-open');
+      e.stopPropagation();
+    });
   }
+
+  // Close sidebar when tapping outside
+  document.addEventListener('click', (e) => {
+    if (sidebar && sidebar.classList.contains('sidebar-open')) {
+      if (!sidebar.contains(e.target) && (!toggle || !toggle.contains(e.target))) {
+        sidebar.classList.remove('sidebar-open');
+      }
+    }
+  });
 </script>
 {% block extra_js %}{% endblock %}
 </body>
