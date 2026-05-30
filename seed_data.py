@@ -55,7 +55,7 @@ print(f"Created {len(subjects)} subjects.")
 if not User.objects.filter(username='teacher1').exists():
     t_user = User.objects.create_user('teacher1', 'teacher1@school.cm', 'teacher123',
                                        first_name='John', last_name='Kimbi', role='teacher')
-    teacher = Teacher.objects.create(user=t_user, qualification='BSc Mathematics')
+    teacher = Teacher.objects.create(user=t_user, specialisation='BSc Mathematics', staff_id='TCH001')
     print("Created Teacher: John Kimbi (teacher1 / teacher123)")
 else:
     t_user = User.objects.get(username='teacher1')
