@@ -20,10 +20,10 @@ class User(AbstractUser):
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='student')
 
-    def is_admin(self):   return self.role == 'admin'
-    def is_teacher(self): return self.role == 'teacher'
-    def is_student(self): return self.role == 'student'
-    def is_parent(self):  return self.role == 'parent'
+    def is_admin(self):   return self.role == 'admin' or self.is_superuser
+    def is_teacher(self): return self.role == 'teacher' and not self.is_superuser
+    def is_student(self): return self.role == 'student' and not self.is_superuser
+    def is_parent(self):  return self.role == 'parent' and not self.is_superuser
 
     def __str__(self):
         return f"{self.get_full_name()} ({self.role})"
