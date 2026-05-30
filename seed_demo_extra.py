@@ -2,6 +2,10 @@
 Extra seed: adds Sequence 2 marks (published), student4, parent2, and a second class.
 Run with: python manage.py shell < seed_demo_extra.py
 """
+import django, os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'eduresults_cm.settings')
+django.setup()
+
 import datetime
 from accounts.models import User, Teacher, Student, Parent
 from school.models import AcademicYear, Term, Sequence, Class, Subject, TeacherAssignment, Enrollment

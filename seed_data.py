@@ -4,6 +4,7 @@ Run with: venv\Scripts\python manage.py shell < seed_data.py
 """
 import django, os, datetime
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'eduresults_cm.settings')
+django.setup()
 
 from accounts.models import User, Teacher, Student, Parent
 from school.models import AcademicYear, Term, Sequence, Class, Subject, TeacherAssignment, Enrollment

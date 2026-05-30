@@ -8,5 +8,5 @@ python manage.py migrate
 
 # Render free tier doesn't support SSH/Shell, so we run these during the build
 python create_admin.py
-python manage.py shell < seed_data.py
-python manage.py shell < seed_demo_extra.py
+python seed_data.py
+python seed_demo_extra.py
