@@ -161,6 +161,7 @@ AXES_FAILURE_LIMIT = 5
 AXES_COOLOFF_TIME = 1  # 1 hour lockout
 AXES_LOCKOUT_TEMPLATE = 'errors/403.html'
 AXES_RESET_ON_SUCCESS = True
+AXES_META_PREFER_X_FORWARDED_FOR = True
 
 # ── Logging Configuration ──
 LOGGING = {
