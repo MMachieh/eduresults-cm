@@ -5,6 +5,7 @@ set -o errexit
 pip install -r requirements.txt
 python manage.py collectstatic --no-input
 python manage.py migrate
+python manage.py axes_reset
 
 # Render free tier doesn't support SSH/Shell, so we run these during the build
 python create_admin.py
