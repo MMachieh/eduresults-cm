@@ -151,7 +151,7 @@ stuSel.addEventListener('change', function() {
 
 btnView.addEventListener('click', function() {
     const url = VIEW_BASE.replace('999999', seqSel.value).replace('888888', stuSel.value);
-    window.open(url, '_blank');
+    window.location.href = url;
 });
 
 btnPdf.addEventListener('click', function() {

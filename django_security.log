@@ -42,3 +42,5 @@ Traceback (most recent call last):
   File "C:\Users\mmach\OneDrive\Documents\Code\VSCode Project Folders\Python_Projects\App Dev Course\my_webapp\eduresults_cm\venv\Lib\site-packages\django\http\request.py", line 206, in get_host
     raise DisallowedHost(msg)
 django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+AXES: New login failure by {username: "********************", ip_address: "********************", user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36", path_info: "/accounts/login/"}. Created new record in the database.
+AXES: New login failure by {username: "********************", ip_address: "********************", user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36", path_info: "/accounts/login/"}. Created new record in the database.

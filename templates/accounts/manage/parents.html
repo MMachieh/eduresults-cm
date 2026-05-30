@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Parents - EduResults CM{% endblock %}
 {% block nav_parents %}active{% endblock %}
@@ -93,10 +94,7 @@
                             <td class="text-muted small">{{ forloop.counter }}</td>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
-                                    <div class="rounded-circle bg-info bg-opacity-15 d-flex align-items-center justify-content-center flex-shrink-0 text-info fw-bold"
-                                         style="width:36px;height:36px;font-size:.85rem;">
-                                        {{ parent_user.first_name|first|upper }}{{ parent_user.last_name|first|upper }}
-                                    </div>
+                                    <img src="{% static 'img/default-avatar.svg' %}" alt="Avatar" class="rounded-circle flex-shrink-0" style="width:36px;height:36px;object-fit:cover;">
                                     <span class="fw-bold">{{ parent_user.get_full_name|default:parent_user.username }}</span>
                                 </div>
                             </td>
