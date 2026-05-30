@@ -59,7 +59,10 @@ if not User.objects.filter(username='teacher1').exists():
     print("Created Teacher: John Kimbi (teacher1 / teacher123)")
 else:
     t_user = User.objects.get(username='teacher1')
-    teacher = t_user.teacher_profile
+    try:
+        teacher = t_user.teacher_profile
+    except Exception:
+        teacher = Teacher.objects.create(user=t_user, specialisation='BSc Mathematics', staff_id='TCH001')
     print("Found Teacher: teacher1")
 
 # ── 5. Class ────────────────────────────────────────────────────────
