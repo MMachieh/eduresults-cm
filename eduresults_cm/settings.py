@@ -148,12 +148,12 @@ if not DEBUG:
     SECURE_HSTS_PRELOAD = True
 
 # ── Content Security Policy (django-csp) ──
-CSP_DEFAULT_SRC = ("'self'",)
-CSP_STYLE_SRC = ("'self'", "https://cdn.jsdelivr.net", "'unsafe-inline'")
-CSP_SCRIPT_SRC = ("'self'", "https://cdn.jsdelivr.net")
-CSP_FONT_SRC = ("'self'", "https://cdn.jsdelivr.net")
-CSP_IMG_SRC = ("'self'", "data:")
-CSP_FRAME_ANCESTORS = ("'none'",)
+CSP_DEFAULT_SRC = ["'self'"]
+CSP_STYLE_SRC = ["'self'", "https://cdn.jsdelivr.net", "'unsafe-inline'"]
+CSP_SCRIPT_SRC = ["'self'", "https://cdn.jsdelivr.net"]
+CSP_FONT_SRC = ["'self'", "https://cdn.jsdelivr.net"]
+CSP_IMG_SRC = ["'self'", "data:"]
+CSP_FRAME_ANCESTORS = ["'none'"]
 CSP_INCLUDE_NONCE_IN = ['script-src']
 
 # ── Rate Limiting (django-axes) ──
