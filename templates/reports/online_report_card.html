@@ -11,6 +11,53 @@
         .card-body { padding: 0 !important; }
         .print-container { max-width: 100% !important; margin: 0 !important; }
     }
+
+    /* ── Mobile Report Card ── */
+    .report-table-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -0.5rem;
+        padding: 0 0.5rem;
+    }
+    .report-table-scroll table {
+        min-width: 520px;
+    }
+
+    @media (max-width: 768px) {
+        .report-card-body {
+            padding: 1.25rem !important;
+        }
+        .report-card-body .text-center.border-bottom h1 {
+            font-size: 1.3rem;
+        }
+        .report-card-body .text-center.border-bottom h4 {
+            font-size: 0.95rem;
+        }
+        .report-card-body .text-center.border-bottom h5 {
+            font-size: 0.85rem;
+        }
+        .report-card-body .text-center.border-bottom p {
+            font-size: 0.8rem;
+        }
+        .report-card-body .col-md-6 .float-end {
+            float: none !important;
+            width: 100% !important;
+        }
+        .report-summary-box th,
+        .report-summary-box td {
+            font-size: 0.9rem !important;
+        }
+        .report-summary-box .fs-5 {
+            font-size: 1rem !important;
+        }
+        .report-card-body .signature-block {
+            text-align: center !important;
+        }
+        .report-card-body .signature-block hr {
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+    }
 </style>
 
 <div class="container mt-4 mb-5 print-container">
@@ -43,7 +90,7 @@
     </div>
 
     <div class="card shadow border-2 border-dark">
-        <div class="card-body p-5">
+        <div class="card-body p-5 report-card-body">
             <!-- Header -->
             <div class="text-center border-bottom border-dark pb-3 mb-4">
                 <h1 class="text-uppercase fw-bold" style="color: #0C447C;">EduResults CM</h1>
@@ -75,6 +122,7 @@
             </div>
 
             <!-- Marks Table -->
+            <div class="report-table-scroll">
             <table class="table table-bordered border-dark align-middle">
                 <thead class="table-dark">
                     <tr class="text-center text-uppercase">
@@ -119,11 +167,12 @@
                     </tr>
                 </tfoot>
             </table>
+            </div>
 
             <!-- Summary & Signature -->
             <div class="row mt-4">
                 <div class="col-md-6">
-                    <div class="border border-dark p-3 rounded {% if is_pass %}bg-success bg-opacity-10{% else %}bg-danger bg-opacity-10{% endif %}">
+                    <div class="border border-dark p-3 rounded report-summary-box {% if is_pass %}bg-success bg-opacity-10{% else %}bg-danger bg-opacity-10{% endif %}">
                         <table class="table table-sm table-borderless mb-0">
                             <tr>
                                 <th class="fs-5">Sequence Average:</th>
@@ -153,7 +202,7 @@
                     </div>
                 </div>
                 <div class="col-md-6 text-end d-flex flex-column justify-content-end">
-                    <div class="mt-4">
+                    <div class="mt-4 signature-block">
                         <p class="mb-5 fw-bold text-uppercase">The Principal</p>
                         <hr style="width:200px; border-color:#000; margin-left:auto;" class="mb-1">
                         <p class="text-muted small">Signature &amp; Stamp</p>
