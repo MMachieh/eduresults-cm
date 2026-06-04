@@ -47,9 +47,9 @@
                         <a href="{% url 'reports:online_report_card_self' rc.sequence.id %}" class="btn btn-primary flex-grow-1">
                             <i class="ti ti-eye"></i> View
                         </a>
-                        <button onclick="window.location.href='{% url 'reports:online_report_card_self' rc.sequence.id %}'" class="btn btn-outline-secondary">
+                        <a href="{% url 'reports:online_report_card_self' rc.sequence.id %}" class="btn btn-outline-secondary">
                             <i class="ti ti-printer"></i>
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>

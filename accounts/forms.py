@@ -22,10 +22,6 @@ class ParentRegistrationForm(UserCreationForm):
 
     def clean_student_matricule(self):
         matricule = self.cleaned_data.get('student_matricule')
-        try:
-            student = Student.objects.get(matricule=matricule)
-        except Student.DoesNotExist:
-            raise forms.ValidationError("No student found with this matricule number. Please check and try again.")
         return matricule
 
     def clean_phone_number(self):

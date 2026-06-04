@@ -45,11 +45,11 @@
                                         {% csrf_token %}
                                         <input type="hidden" name="sequence" value="{{ sequence.id }}">
                                         {% if sequence.is_published %}
-                                            <button type="submit" name="action" value="unpublish" class="btn btn-sm btn-outline-warning" onclick="return confirm('Are you sure you want to unpublish this sequence? Marks will become editable again.');">
+                                            <button type="submit" name="action" value="unpublish" class="btn btn-sm btn-outline-warning btn-unpublish" data-confirm-msg="Are you sure you want to unpublish this sequence? Marks will become editable again.">
                                                 <i class="ti ti-lock-open"></i> Unpublish
                                             </button>
                                         {% else %}
-                                            <button type="submit" name="action" value="publish" class="btn btn-sm btn-success" onclick="return confirm('Are you sure you want to publish this sequence? Marks will be locked and an email notification will be sent to parents.');">
+                                            <button type="submit" name="action" value="publish" class="btn btn-sm btn-success btn-publish" data-confirm-msg="Are you sure you want to publish this sequence? Marks will be locked and an email notification will be sent to parents.">
                                                 <i class="ti ti-lock"></i> Publish
                                             </button>
                                         {% endif %}
@@ -67,4 +67,19 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script nonce="{{ request.csp_nonce }}">
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.btn-publish, .btn-unpublish').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                const msg = this.getAttribute('data-confirm-msg');
+                if (!confirm(msg)) {
+                    e.preventDefault();
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

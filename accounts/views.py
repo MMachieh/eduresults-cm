@@ -104,13 +104,16 @@ def parent_register(request):
             user.save()
 
             matricule = form.cleaned_data.get('student_matricule')
-            student = Student.objects.get(matricule=matricule)
-
             parent = Parent.objects.create(
                 user=user,
                 phone_number=form.cleaned_data.get('phone_number')
             )
-            parent.students.add(student)
+            
+            try:
+                student = Student.objects.get(matricule=matricule)
+                parent.students.add(student)
+            except Student.DoesNotExist:
+                pass
 
             return redirect('accounts:pending_approval')
     else:

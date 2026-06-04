@@ -97,7 +97,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
+<script nonce="{{ request.csp_nonce }}">
 const API_URL = "{% url 'reports:api_enrollments' %}";
 const VIEW_BASE = "{% url 'reports:view_report_card' sequence_id=999999 student_id=888888 %}";
 const PDF_BASE  = "{% url 'reports:download_pdf' sequence_id=999999 student_id=888888 %}";

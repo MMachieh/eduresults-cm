@@ -83,7 +83,7 @@
                     <i class="ti ti-arrow-left"></i> Back
                 </a>
             {% endif %}
-            <button class="btn btn-outline-primary" onclick="window.print()">
+            <button class="btn btn-outline-primary" id="printReportBtn">
                 <i class="ti ti-printer"></i> Print Draft
             </button>
         </div>
@@ -213,4 +213,17 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script nonce="{{ request.csp_nonce }}">
+    document.addEventListener('DOMContentLoaded', function() {
+        const printBtn = document.getElementById('printReportBtn');
+        if (printBtn) {
+            printBtn.addEventListener('click', function() {
+                window.print();
+            });
+        }
+    });
+</script>
 {% endblock %}

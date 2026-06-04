@@ -181,7 +181,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
+<script nonce="{{ request.csp_nonce }}">
 document.querySelectorAll('.reject-form').forEach(function(form) {
     form.addEventListener('submit', function(e) {
         if (!confirm('Reject and permanently delete this registration?')) {

@@ -131,8 +131,9 @@
 {% block extra_js %}
 {% if trend_list %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script>
-const trendData = {{ trend_data|safe }};
+<script nonce="{{ request.csp_nonce }}">
+{{ trend_data|json_script:"trendData" }}
+const trendData = JSON.parse(document.getElementById('trendData').textContent);
 
 new Chart(document.getElementById('trendChart'), {
     type: 'line',
